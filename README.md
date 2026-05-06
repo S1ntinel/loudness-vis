@@ -1,8 +1,8 @@
 # LoudnessVis
 
-Audio visualization toolkit for inspecting loudness-war traits in music, with a React web app, a standalone Lite HTML demo, a UV-based local launcher, and an Electron path for future device integration.
+[English](./README.md) | [简体中文](./README.zh-CN.md)
 
-一个面向响度战争分析的音频可视化工具，当前包含 React Web 主界面、Lite HTML 演示版、UV 本地启动包，并预留 Electron 桌面化路线。
+Audio visualization toolkit for inspecting loudness-war traits in music, with a React web app, a standalone Lite HTML demo, a UV-based local launcher, and an Electron path for future device integration.
 
 ## Overview
 
