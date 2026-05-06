@@ -73,15 +73,52 @@
   text-overflow: ellipsis;
 }
 
-/* ============ 主区域（声场+频响+波形） ============ */
+/* ============ 主区域（声场+频响 / 波形 / 分隔条 / 频谱图） ============ */
 .layout {
   display: grid;
-  grid-template-columns: 360px minmax(0, 1fr);
-  grid-template-rows: 360px minmax(180px, 1fr);
+  grid-template-columns: 320px minmax(0, 1fr);
+  /* 行高在组件内通过 inline style 控制：320px / waveFr / 6px / spectroFr */
   gap: 10px;
   padding: 10px;
   flex: 1;
   min-height: 0;
+}
+.splitter {
+  grid-column: 1 / 3;
+  height: 6px;
+  cursor: row-resize;
+  background: transparent;
+  border-radius: 3px;
+  position: relative;
+  transition: background 0.15s;
+  z-index: 5;
+}
+.splitter::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 36px;
+  height: 2px;
+  background: var(--text-3);
+  border-radius: 2px;
+  opacity: 0.35;
+  transition: opacity 0.15s, background 0.15s;
+}
+.splitter:hover {
+  background: rgba(59, 109, 181, 0.10);
+}
+.splitter:hover::before {
+  opacity: 0.85;
+  background: #3b6db5;
+}
+.splitterDragging {
+  background: rgba(59, 109, 181, 0.18) !important;
+}
+.splitterDragging::before {
+  opacity: 1 !important;
+  background: #3b6db5 !important;
 }
 .panel {
   background: var(--panel-bg);
@@ -147,8 +184,9 @@
 .lufs {
   display: inline-flex;
   align-items: baseline;
-  gap: 14px;
+  gap: 12px;
   font-variant-numeric: tabular-nums;
+  flex-wrap: wrap;
 }
 .lufsItem {
   display: inline-flex;
@@ -160,9 +198,11 @@
   color: var(--text-3);
   text-transform: uppercase;
   letter-spacing: 0.8px;
+  min-width: 12px;
+  text-align: right;
 }
 .lufsValue {
-  font-size: 18px;
+  font-size: 17px;
   font-weight: 500;
   color: #e85d4a;
 }
@@ -170,6 +210,64 @@
   font-size: 10px;
   color: var(--text-3);
   letter-spacing: 0.4px;
+}
+
+/* ============ 频响图例 ============ */
+.legendBar {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.legendItem {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 2px 6px;
+  background: var(--btn-bg);
+  border: 1px solid var(--btn-border);
+  border-radius: 4px;
+}
+.legendDot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  cursor: pointer;
+  border: none;
+  padding: 0;
+  flex: 0 0 auto;
+}
+button.legendDot { cursor: pointer; }
+.legendName {
+  font-size: 11px;
+  color: var(--text);
+  max-width: 90px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.legendClose {
+  background: transparent;
+  border: none;
+  color: var(--text-3);
+  cursor: pointer;
+  font-size: 11px;
+  padding: 0 2px;
+  font: inherit;
+}
+.legendClose:hover { color: #e85d4a; }
+.addCompareBtn {
+  padding: 3px 10px;
+  background: rgba(59, 109, 181, 0.10);
+  border: 1px dashed rgba(59, 109, 181, 0.5);
+  color: #3b6db5;
+  cursor: pointer;
+  border-radius: 4px;
+  font: inherit;
+  font-size: 11px;
+}
+.addCompareBtn:hover {
+  background: rgba(59, 109, 181, 0.18);
 }
 .panelCanvas {
   display: block;
@@ -182,6 +280,7 @@
 }
 .panelCanvasGrab:active { cursor: grabbing; }
 
-.goniometer { grid-column: 1; grid-row: 1; }
-.spectrum   { grid-column: 2; grid-row: 1; }
-.waveform   { grid-column: 1 / 3; grid-row: 2; }
+.goniometer  { grid-column: 1;     grid-row: 1; }
+.spectrum    { grid-column: 2;     grid-row: 1; }
+.waveform    { grid-column: 1 / 3; grid-row: 2; }
+.spectrogram { grid-column: 1 / 3; grid-row: 4; padding-bottom: 4px; }

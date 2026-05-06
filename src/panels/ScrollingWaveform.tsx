@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { recordEngine } from '../audio/recordEngine';
+import { trackEngine } from '../audio/trackEngine';
 import { cssVar } from '../theme';
 
 const COLUMNS = 480;   // 缓冲柱数；每柱 ~16ms（@60fps），约显示最近 8 秒
@@ -7,7 +7,7 @@ const HISTORY_FILL_COLOR = '#3b6db5';
 
 /**
  * 实时滚动波形：从右向左流动。
- * - 每帧从 recordEngine.analyser 取一段时域样本，压缩为 (min, max)
+ * - 每帧从 trackEngine.analyser 取一段时域样本，压缩为 (min, max)
  * - 写入环形缓冲，渲染时按"老→新（左→右）"绘制
  */
 export default function ScrollingWaveform({ className, active }: { className?: string; active: boolean }) {
@@ -15,7 +15,7 @@ export default function ScrollingWaveform({ className, active }: { className?: s
   const colMinRef = useRef(new Float32Array(COLUMNS));
   const colMaxRef = useRef(new Float32Array(COLUMNS));
   const writeIdxRef = useRef(0);
-  const sampleBufRef = useRef(new Float32Array(recordEngine.analyser.fftSize));
+  const sampleBufRef = useRef(new Float32Array(trackEngine.analyser.fftSize));
 
   useEffect(() => {
     const canvas = canvasRef.current!;
@@ -54,7 +54,7 @@ export default function ScrollingWaveform({ className, active }: { className?: s
       // 取最新一帧时域 → 写入环形缓冲
       if (active) {
         const buf = sampleBufRef.current;
-        recordEngine.analyser.getFloatTimeDomainData(buf);
+        trackEngine.analyser.getFloatTimeDomainData(buf);
         let mn = 0, mx = 0;
         for (let i = 0; i < buf.length; i++) {
           const v = buf[i];

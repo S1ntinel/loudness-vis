@@ -1,6 +1,6 @@
 {
   "name": "loudness-vis",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "description": "Loudness War Visualizer",
   "type": "module",
@@ -12,7 +12,6 @@
     "start:local": "node scripts/local-demo-server.mjs --build --open hub",
     "start:dist": "node scripts/local-demo-server.mjs --build --open dist",
     "start:legacy": "node scripts/local-demo-server.mjs --open legacy",
-    "lite:build": "node scripts/build-lite.mjs",
     "uv:sync": "node scripts/sync-uv-assets.mjs",
     "uv:build": "npm run build && npm run uv:sync && node scripts/build-uv.mjs",
     "dev:electron": "concurrently -k -n vite,electron -c blue,magenta \"npm:dev\" \"wait-on http://localhost:5173 && cross-env ELECTRON_DEV=1 electron .\"",

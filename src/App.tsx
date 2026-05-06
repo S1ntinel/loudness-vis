@@ -5,19 +5,34 @@ import { useEngineState } from './audio/useEngineState';
 import { useUIStore } from './store';
 import Analyze from './tabs/Analyze';
 import Record from './tabs/Record';
+import UploadTargetModal from './components/UploadTargetModal';
 
 export default function App() {
-  const { tab, setTab, theme, toggleTheme, fileName, setFileName, volume, setVolume } = useUIStore();
+  const { tab, setTab, theme, toggleTheme, fileName, volume, setVolume, setPendingUpload } = useUIStore();
   const { audioBuffer, isPlaying, pauseOffset } = useEngineState();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [dragActive, setDragActive] = useState(false);
   const dragDepthRef = useRef(0);
+  const [pinned, setPinned] = useState(false);
+  const isElectron = typeof window !== 'undefined' && !!window.electronAPI;
 
-  // 加载文件
-  async function loadFile(file: File) {
-    setFileName(file.name);
-    const r = await engine.loadFile(file);
-    if (!r.ok) setFileName('解码失败：' + (r.error || ''));
+  // 启动时同步 Electron 当前 alwaysOnTop 状态
+  useEffect(() => {
+    if (window.electronAPI?.getAlwaysOnTop) {
+      window.electronAPI.getAlwaysOnTop().then(v => setPinned(Boolean(v)));
+    }
+  }, []);
+
+  // 加载新音频时重置时间轴视图
+  useEffect(() => {
+    if (audioBuffer) useUIStore.getState().resetView();
+  }, [audioBuffer]);
+
+  function togglePin() {
+    if (!window.electronAPI) return;
+    const next = !pinned;
+    window.electronAPI.setAlwaysOnTop(next);
+    setPinned(next);
   }
 
   // 拖放
@@ -40,7 +55,7 @@ export default function App() {
       dragDepthRef.current = 0;
       setDragActive(false);
       const f = e.dataTransfer?.files?.[0];
-      if (f) loadFile(f);
+      if (f) setPendingUpload(f);    // 弹 Modal 让用户选目标
     };
     window.addEventListener('dragenter', onDragEnter);
     window.addEventListener('dragleave', onDragLeave);
@@ -52,7 +67,7 @@ export default function App() {
       window.removeEventListener('dragover', onDragOver);
       window.removeEventListener('drop', onDrop);
     };
-  }, []);
+  }, [setPendingUpload]);
 
   // 空格快捷键
   useEffect(() => {
@@ -79,7 +94,7 @@ export default function App() {
       <header className={s.topbar}>
         <input
           type="file" accept="audio/*" ref={fileInputRef} hidden
-          onChange={e => { const f = e.target.files?.[0]; if (f) loadFile(f); }}
+          onChange={e => { const f = e.target.files?.[0]; if (f) setPendingUpload(f); }}
         />
         <button className={s.btn} onClick={() => fileInputRef.current?.click()}>选择文件</button>
         <button className={s.btn} onClick={() => engine.toggle()} disabled={!audioBuffer}>
@@ -102,6 +117,15 @@ export default function App() {
         </button>
 
         <span className={s.divider} />
+        {isElectron && (
+          <button
+            className={`${s.btn} ${pinned ? s.btnPinned : ''}`}
+            onClick={togglePin}
+            title={pinned ? '取消置顶' : '窗口置顶'}
+          >
+            {pinned ? '📌 已置顶' : '📌 置顶'}
+          </button>
+        )}
         <button className={s.btn} onClick={toggleTheme}>{theme === 'dark' ? '深色' : '浅色'}</button>
         <span className={s.labelText}>音量</span>
         <input
@@ -119,6 +143,8 @@ export default function App() {
       <div className={`${s.dropzone} ${dragActive ? s.show : ''}`}>
         ↓ 松开以加载音频文件
       </div>
+
+      <UploadTargetModal />
     </div>
   );
 }

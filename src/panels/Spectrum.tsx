@@ -106,6 +106,31 @@ export default function Spectrum({ className }: { className?: string }) {
       }
       ctx2d.stroke();
 
+      // ===== 对比通道叠加（半透明描边，不填充以保证可读）=====
+      for (const ch of engine.compareChannels) {
+        if (!ch.visible) continue;
+        const sp = ch.spectrum;
+        const halfBin = sp.fftSize >> 1;
+        ctx2d.strokeStyle = ch.color;
+        ctx2d.globalAlpha = 0.85;
+        ctx2d.lineWidth = 1.4;
+        ctx2d.beginPath();
+        let s2 = false;
+        for (let i = 1; i < halfBin; i++) {
+          const f = i * sp.sampleRate / sp.fftSize;
+          if (f < fMin) continue;
+          if (f > fMax) break;
+          const x = fToX(f);
+          const v = Math.max(-100, Math.min(0, sp.db[i]));
+          const y = h * (-v / 100);
+          if (!s2) { ctx2d.moveTo(x, y); s2 = true; }
+          else ctx2d.lineTo(x, y);
+        }
+        ctx2d.stroke();
+      }
+      ctx2d.globalAlpha = 1;
+      ctx2d.lineWidth = 1;
+
       // Hover：十字线 + 浮窗
       const { x: hx, y: hy } = hoverRef.current;
       if (hx >= 0 && hx <= w && hy >= 0 && hy <= h) {

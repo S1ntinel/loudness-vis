@@ -1,13 +1,13 @@
 import { useEffect, useState } from 'react';
-import { recordEngine } from '../../audio/recordEngine';
-import { useRecordState } from '../../audio/useRecordState';
+import { trackEngine } from '../../audio/trackEngine';
+import { useTrackState } from '../../audio/useTrackState';
 import ScrollingWaveform from '../../panels/ScrollingWaveform';
-import Recordings from '../../panels/Recordings';
+import TrackList from '../../panels/TrackList';
 import { formatTime } from '../../audio/stats';
 import s from './Record.module.css';
 
 export default function Record() {
-  const { isRecording, isPaused, permissionState } = useRecordState();
+  const { isRecording, isPaused, permissionState } = useTrackState();
   const [elapsed, setElapsed] = useState(0);
 
   // 实时刷新计时器
@@ -15,7 +15,7 @@ export default function Record() {
     if (!isRecording) { setElapsed(0); return; }
     let raf = 0;
     const loop = () => {
-      setElapsed(recordEngine.getElapsed());
+      setElapsed(trackEngine.getElapsed());
       raf = requestAnimationFrame(loop);
     };
     raf = requestAnimationFrame(loop);
@@ -24,13 +24,12 @@ export default function Record() {
 
   // 进入页签时主动请求一次麦克风权限（让滚动波形能动）
   useEffect(() => {
-    if (permissionState === 'idle') recordEngine.requestMic();
-    // 退出 Record tab 时不释放，保留滚动波形继续显示电平
+    if (permissionState === 'idle') trackEngine.requestMic();
   }, [permissionState]);
 
   function onMainClick() {
-    if (!isRecording) recordEngine.startRecording();
-    else recordEngine.stopRecording();
+    if (!isRecording) trackEngine.startRecording();
+    else trackEngine.stopRecording();
   }
 
   return (
@@ -60,7 +59,7 @@ export default function Record() {
           <div className={s.subBtns}>
             <button
               className={s.subBtn}
-              onClick={() => isPaused ? recordEngine.resumeRecording() : recordEngine.pauseRecording()}
+              onClick={() => isPaused ? trackEngine.resumeRecording() : trackEngine.pauseRecording()}
               disabled={!isRecording}
             >
               {isPaused ? '恢复' : '暂停'}
@@ -91,14 +90,14 @@ export default function Record() {
         />
       </div>
 
-      {/* 录音列表 */}
+      {/* 轨道列表（录音 + 上传） */}
       <div className={`${s.panel} ${s.list}`}>
         <h3 className={s.panelTitle}>
           <span className={s.triangle}>▶</span>
-          录音列表
-          <span className={s.panelTitleEn}>Recordings</span>
+          轨道列表
+          <span className={s.panelTitleEn}>Tracks · drag handles to trim</span>
         </h3>
-        <Recordings />
+        <TrackList />
       </div>
     </div>
   );

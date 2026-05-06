@@ -1,5 +1,5 @@
 // Electron 主进程
-const { app, BrowserWindow } = require('electron');
+const { app, BrowserWindow, ipcMain } = require('electron');
 const path = require('node:path');
 
 const isDev = process.env.ELECTRON_DEV === '1';
@@ -24,6 +24,20 @@ function createWindow() {
     win.loadFile(path.join(__dirname, '..', 'dist', 'index.html'));
   }
 }
+
+// 窗口置顶 IPC
+ipcMain.handle('win:set-always-on-top', (event, flag) => {
+  const win = BrowserWindow.fromWebContents(event.sender);
+  if (win) {
+    win.setAlwaysOnTop(Boolean(flag));
+  }
+  return Boolean(flag);
+});
+
+ipcMain.handle('win:get-always-on-top', (event) => {
+  const win = BrowserWindow.fromWebContents(event.sender);
+  return win ? win.isAlwaysOnTop() : false;
+});
 
 app.whenReady().then(createWindow);
 

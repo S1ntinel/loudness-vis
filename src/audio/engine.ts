@@ -3,13 +3,33 @@
 
 import { computeColoredPeaks, type ColoredPeaks } from './coloredPeaks';
 import { computeLufs, shortTermLufsAt, type LufsResult } from './lufs';
+import { computeAverageSpectrum, type AvgSpectrum } from './avgSpectrum';
+import { computeSpectrogram, type Spectrogram } from './spectrogram';
 
 export interface WaveformPeaks {
   min: Float32Array;
   max: Float32Array;
 }
 
-export type ColorMode = 'mono' | 'multiband';
+export type ColorMode = 'mono' | 'multiband' | 'map';
+
+export interface CompareChannel {
+  id: string;
+  name: string;
+  color: string;
+  spectrum: AvgSpectrum;
+  visible: boolean;
+}
+
+const COMPARE_PALETTE = [
+  '#e8a64a', // 橙
+  '#4ad8a8', // 青绿
+  '#d04ae8', // 紫
+  '#e84a8d', // 粉
+  '#4ac3e8', // 青蓝
+  '#e85d4a', // 红
+  '#8da3e8', // 蓝紫
+];
 
 type AnalyzerBuffer = Float32Array<ArrayBuffer>;
 
@@ -35,7 +55,11 @@ class AudioEngine {
   waveformPeaks: WaveformPeaks | null = null;
   coloredPeaks: ColoredPeaks | null = null;
   lufsResult: LufsResult | null = null;
+  spectrogram: Spectrogram | null = null;
   colorMode: ColorMode = 'multiband';
+
+  /** 频响面板叠加显示的对比通道（不影响主音频播放） */
+  compareChannels: CompareChannel[] = [];
 
   // 状态变化回调（zustand store 订阅）
   private listeners: Set<() => void> = new Set();
@@ -85,6 +109,7 @@ class AudioEngine {
       this.coloredPeaks = computeColoredPeaks(this.audioBuffer, 2000);
       this.waveformPeaks = { min: this.coloredPeaks.min, max: this.coloredPeaks.max };
       this.lufsResult = computeLufs(this.audioBuffer);
+      this.spectrogram = computeSpectrogram(this.audioBuffer, 1024, 1500);
       this.stopSource();
       this.startInternal();
       this.notify();
@@ -94,6 +119,7 @@ class AudioEngine {
       this.coloredPeaks = null;
       this.waveformPeaks = null;
       this.lufsResult = null;
+      this.spectrogram = null;
       this.notify();
       return { ok: false, error: e?.message || String(e) };
     }
@@ -106,6 +132,7 @@ class AudioEngine {
     this.coloredPeaks = computeColoredPeaks(buf, 2000);
     this.waveformPeaks = { min: this.coloredPeaks.min, max: this.coloredPeaks.max };
     this.lufsResult = computeLufs(buf);
+    this.spectrogram = computeSpectrogram(buf, 1024, 1500);
     this.stopSource();
     this.startInternal();
     this.notify();
@@ -117,10 +144,62 @@ class AudioEngine {
     this.notify();
   }
 
+  // ========== 对比通道 ==========
+  addCompareChannel(buf: AudioBuffer, name: string): CompareChannel {
+    const spectrum = computeAverageSpectrum(buf, 4096);
+    const id = String(Date.now()) + '_' + Math.floor(Math.random() * 1000);
+    const usedColors = new Set(this.compareChannels.map(c => c.color));
+    const color = COMPARE_PALETTE.find(c => !usedColors.has(c)) || COMPARE_PALETTE[this.compareChannels.length % COMPARE_PALETTE.length];
+    const ch: CompareChannel = { id, name, color, spectrum, visible: true };
+    this.compareChannels.push(ch);
+    this.notify();
+    return ch;
+  }
+
+  async addCompareFromFile(file: File): Promise<CompareChannel | null> {
+    try {
+      const arr = await file.arrayBuffer();
+      const buf = await this.ctx.decodeAudioData(arr.slice(0));
+      return this.addCompareChannel(buf, file.name.replace(/\.[^.]+$/, ''));
+    } catch (e) {
+      console.error('addCompareFromFile failed', e);
+      return null;
+    }
+  }
+
+  removeCompareChannel(id: string): void {
+    const idx = this.compareChannels.findIndex(c => c.id === id);
+    if (idx >= 0) {
+      this.compareChannels.splice(idx, 1);
+      this.notify();
+    }
+  }
+
+  toggleCompareVisible(id: string): void {
+    const c = this.compareChannels.find(c => c.id === id);
+    if (c) { c.visible = !c.visible; this.notify(); }
+  }
+
+  clearCompareChannels(): void {
+    this.compareChannels = [];
+    this.notify();
+  }
+
   /** 当前位置的 short-term LUFS（最近 3 秒） */
   getShortTermLufs(): number {
     if (!this.lufsResult || !this.audioBuffer) return -Infinity;
     return shortTermLufsAt(this.lufsResult.blocks, this.lufsResult.hopSec, this.getCurrentTime(), 3);
+  }
+
+  /** 当前位置的 momentary LUFS（最近 400ms 一个块） */
+  getMomentaryLufs(): number {
+    if (!this.lufsResult || !this.audioBuffer) return -Infinity;
+    const blocks = this.lufsResult.blocks;
+    if (blocks.length === 0) return -Infinity;
+    const idx = Math.max(0, Math.min(blocks.length - 1, Math.floor(this.getCurrentTime() / this.lufsResult.hopSec)));
+    const ms = blocks[idx];
+    if (ms <= 0) return -Infinity;
+    return -0.691 + 10 * Math.log10(ms);
   }
 
   private stopSource(): void {

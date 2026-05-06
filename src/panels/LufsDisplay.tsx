@@ -3,23 +3,41 @@ import { engine } from '../audio/engine';
 import s from '../tabs/Analyze/Analyze.module.css';
 
 /**
- * 显示 Integrated LUFS（整曲，预计算） + Short-term LUFS（最近 3s，实时跟播放进度）
+ * LUFS 数显（5 项）：
+ *  M  Momentary  (400ms 实时)
+ *  S  Short-term (3s 实时)
+ *  I  Integrated (整曲)
+ *  TP True Peak  (整曲，dBTP)
+ *  LR Loudness Range (整曲)
  */
 export default function LufsDisplay() {
-  const stRef = useRef<HTMLSpanElement>(null);
-  const intRef = useRef<HTMLSpanElement>(null);
+  const mRef  = useRef<HTMLSpanElement>(null);
+  const sRef  = useRef<HTMLSpanElement>(null);
+  const iRef  = useRef<HTMLSpanElement>(null);
+  const tpRef = useRef<HTMLSpanElement>(null);
+  const lrRef = useRef<HTMLSpanElement>(null);
 
   useEffect(() => {
     let raf = 0;
     function loop() {
       const lr = engine.lufsResult;
-      if (lr && intRef.current) {
-        intRef.current.textContent = isFinite(lr.integrated) ? lr.integrated.toFixed(1) : '—';
-      }
+
+      const m = engine.getMomentaryLufs();
+      if (mRef.current) mRef.current.textContent = isFinite(m) ? m.toFixed(1) : '—';
+
       const st = engine.getShortTermLufs();
-      if (stRef.current) {
-        stRef.current.textContent = isFinite(st) ? st.toFixed(1) : '—';
+      if (sRef.current) sRef.current.textContent = isFinite(st) ? st.toFixed(1) : '—';
+
+      if (lr && iRef.current) {
+        iRef.current.textContent = isFinite(lr.integrated) ? lr.integrated.toFixed(1) : '—';
       }
+      if (lr && tpRef.current) {
+        tpRef.current.textContent = isFinite(lr.truePeak) ? lr.truePeak.toFixed(1) : '—';
+      }
+      if (lr && lrRef.current) {
+        lrRef.current.textContent = lr.lra.toFixed(1);
+      }
+
       raf = requestAnimationFrame(loop);
     }
     raf = requestAnimationFrame(loop);
@@ -28,15 +46,28 @@ export default function LufsDisplay() {
 
   return (
     <div className={s.lufs}>
-      <div className={s.lufsItem}>
+      <div className={s.lufsItem} title="Momentary · 最近 400ms 瞬时响度">
+        <span className={s.lufsLabel}>M</span>
+        <span ref={mRef} className={s.lufsValue}>—</span>
+      </div>
+      <div className={s.lufsItem} title="Short-term · 最近 3s 短时响度">
         <span className={s.lufsLabel}>S</span>
-        <span ref={stRef} className={s.lufsValue}>—</span>
+        <span ref={sRef} className={s.lufsValue}>—</span>
+      </div>
+      <div className={s.lufsItem} title="Integrated · 整曲集成响度（EBU R128）">
+        <span className={s.lufsLabel}>I</span>
+        <span ref={iRef} className={s.lufsValue}>—</span>
         <span className={s.lufsUnit}>LUFS</span>
       </div>
-      <div className={s.lufsItem}>
-        <span className={s.lufsLabel}>I</span>
-        <span ref={intRef} className={s.lufsValue}>—</span>
-        <span className={s.lufsUnit}>LUFS</span>
+      <div className={s.lufsItem} title="True Peak · 4× 上采样后的最大幅度">
+        <span className={s.lufsLabel}>TP</span>
+        <span ref={tpRef} className={s.lufsValue}>—</span>
+        <span className={s.lufsUnit}>dBTP</span>
+      </div>
+      <div className={s.lufsItem} title="LRA · Loudness Range，整曲响度跨度">
+        <span className={s.lufsLabel}>LR</span>
+        <span ref={lrRef} className={s.lufsValue}>—</span>
+        <span className={s.lufsUnit}>LU</span>
       </div>
     </div>
   );

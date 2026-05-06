@@ -32,6 +32,15 @@
 .topbar .btn:hover { background: var(--btn-bg-hover); }
 .topbar .btn:active { background: var(--btn-bg-active); }
 .topbar .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.topbar .btnPinned {
+  background: rgba(232, 166, 74, 0.18);
+  border-color: rgba(232, 166, 74, 0.65);
+  color: #c47a1a;
+}
+.topbar .btnPinned:hover {
+  background: rgba(232, 166, 74, 0.28);
+  border-color: rgba(232, 166, 74, 0.85);
+}
 
 .topbar .tabBtn {
   padding: 7px 14px;
