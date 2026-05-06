@@ -101,6 +101,7 @@ npm run dev:electron
 
 ## 相关文档
 
+- 开发日志：[`DEVLOG.zh-CN.md`](./DEVLOG.zh-CN.md)
 - Lite 包说明：[`lite/README.md`](./lite/README.md)
 - UV 启动包说明：[`UV/README.md`](./UV/README.md)
 

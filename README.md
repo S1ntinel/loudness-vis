@@ -101,6 +101,7 @@ npm run dev:electron
 
 ## Related Docs
 
+- Development log (Chinese): [`DEVLOG.zh-CN.md`](./DEVLOG.zh-CN.md)
 - Lite bundle: [`lite/README.md`](./lite/README.md)
 - UV launcher package: [`UV/README.md`](./UV/README.md)
 
