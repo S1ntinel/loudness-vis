@@ -9,9 +9,11 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const rootDir = resolve(__dirname, '..');
 const distDir = join(rootDir, 'dist');
 const publicDir = join(rootDir, 'public');
+const fallbackPortSpan = 20;
 
 const argMap = parseArgs(process.argv.slice(2));
 const host = argMap.host || '127.0.0.1';
+const hasExplicitPort = argMap.port != null;
 const port = Number(argMap.port || 4317);
 const page = normalizePage(argMap.open || 'hub');
 const shouldBuild = Boolean(argMap.build);
@@ -67,22 +69,21 @@ const server = createServer(async (req, res) => {
   }
 });
 
-server.listen(port, host, () => {
-  const baseUrl = `http://${host}:${port}`;
-  const selectedUrl = `${baseUrl}${pagePath(page)}`;
-
-  console.log(`[local] LoudnessVis server ready at ${baseUrl}`);
-  console.log(`[local] React build : ${baseUrl}/dist/index.html`);
-  console.log(`[local] Legacy demo : ${baseUrl}/legacy.html`);
-
-  if (shouldOpen) {
-    openBrowser(selectedUrl);
-  }
-});
-
 process.on('SIGINT', () => {
   server.close(() => process.exit(0));
 });
+
+const activePort = await bindServer(server, host, port, hasExplicitPort);
+const baseUrl = `http://${host}:${activePort}`;
+const selectedUrl = `${baseUrl}${pagePath(page)}`;
+
+console.log(`[local] LoudnessVis server ready at ${baseUrl}`);
+console.log(`[local] React build : ${baseUrl}/dist/index.html`);
+console.log(`[local] Legacy demo : ${baseUrl}/legacy.html`);
+
+if (shouldOpen) {
+  openBrowser(selectedUrl);
+}
 
 function parseArgs(args) {
   const parsed = {};
@@ -216,6 +217,66 @@ function runBuild() {
   if (result.status !== 0) {
     process.exit(result.status ?? 1);
   }
+}
+
+async function bindServer(httpServer, listenHost, requestedPort, explicitPort) {
+  if (explicitPort) {
+    try {
+      return await listenOnce(httpServer, listenHost, requestedPort);
+    } catch (error) {
+      handleListenFailure(error, requestedPort);
+    }
+  }
+
+  for (let offset = 0; offset <= fallbackPortSpan; offset += 1) {
+    const candidatePort = requestedPort + offset;
+    try {
+      const boundPort = await listenOnce(httpServer, listenHost, candidatePort);
+      if (offset > 0) {
+        console.warn(`[local] Port ${requestedPort} was busy. Switched to ${boundPort}.`);
+      }
+      return boundPort;
+    } catch (error) {
+      if (!isAddressInUseError(error) || offset === fallbackPortSpan) {
+        handleListenFailure(error, candidatePort);
+      }
+    }
+  }
+
+  throw new Error(`No available port found in range ${requestedPort}-${requestedPort + fallbackPortSpan}.`);
+}
+
+function listenOnce(httpServer, listenHost, candidatePort) {
+  return new Promise((resolvePromise, rejectPromise) => {
+    const onError = (error) => {
+      httpServer.off('listening', onListening);
+      rejectPromise(error);
+    };
+
+    const onListening = () => {
+      httpServer.off('error', onError);
+      resolvePromise(candidatePort);
+    };
+
+    httpServer.once('error', onError);
+    httpServer.once('listening', onListening);
+    httpServer.listen(candidatePort, listenHost);
+  });
+}
+
+function isAddressInUseError(error) {
+  return Boolean(error && typeof error === 'object' && 'code' in error && error.code === 'EADDRINUSE');
+}
+
+function handleListenFailure(error, candidatePort) {
+  if (isAddressInUseError(error)) {
+    console.error(`[local] Port ${candidatePort} is already in use.`);
+    console.error('[local] Close the existing process or retry with --port <number>.');
+    process.exit(1);
+  }
+
+  console.error(`[local] Server launch failed: ${error instanceof Error ? error.message : String(error)}`);
+  process.exit(1);
 }
 
 function openBrowser(targetUrl) {
