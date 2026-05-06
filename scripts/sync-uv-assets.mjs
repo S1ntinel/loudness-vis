@@ -1,4 +1,4 @@
-import { cpSync, existsSync, mkdirSync, rmSync, writeFileSync } from 'node:fs';
+import { cpSync, existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -6,8 +6,8 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const rootDir = resolve(__dirname, '..');
 const uvDir = join(rootDir, 'UV');
 const distDir = join(rootDir, 'dist');
-const publicDir = join(rootDir, 'public');
 const assetsDir = join(uvDir, 'src', 'loudness_vis_uv', 'assets');
+const legacyHtmlPath = join(rootDir, 'legacy.html');
 
 if (!existsSync(distDir)) {
   console.error('[uv:sync] dist directory not found. Run `npm run build` first.');
@@ -18,8 +18,7 @@ mkdirSync(assetsDir, { recursive: true });
 cleanDirectory(assetsDir);
 
 cpSync(distDir, join(assetsDir, 'dist'), { recursive: true });
-cpSync(publicDir, join(assetsDir, 'public'), { recursive: true });
-cpSync(join(rootDir, 'legacy.html'), join(assetsDir, 'legacy.html'));
+writeFileSync(join(assetsDir, 'legacy.html'), renderUvLegacyHtml(), 'utf8');
 writeFileSync(join(assetsDir, 'index.html'), renderHubPage(), 'utf8');
 
 console.log(`[uv:sync] assets updated in ${assetsDir}`);
@@ -29,6 +28,11 @@ function cleanDirectory(directory) {
   rmSync(join(directory, 'public'), { force: true, recursive: true });
   rmSync(join(directory, 'legacy.html'), { force: true });
   rmSync(join(directory, 'index.html'), { force: true });
+}
+
+function renderUvLegacyHtml() {
+  const legacyHtml = readFileSync(legacyHtmlPath, 'utf8');
+  return legacyHtml.replaceAll('public/fonts/', './dist/fonts/');
 }
 
 function renderHubPage() {
