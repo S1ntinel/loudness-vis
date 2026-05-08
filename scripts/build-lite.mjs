@@ -5,11 +5,11 @@ import { fileURLToPath } from 'node:url';
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const rootDir = resolve(__dirname, '..');
 const liteDir = join(rootDir, 'lite');
-const legacyHtmlPath = join(rootDir, 'legacy.html');
+const liteHtmlPath = join(rootDir, 'lite.html');
 const fontsDir = join(rootDir, 'public', 'fonts');
 
-if (!existsSync(legacyHtmlPath)) {
-  console.error('[lite:build] legacy.html not found.');
+if (!existsSync(liteHtmlPath)) {
+  console.error('[lite:build] lite.html not found.');
   process.exit(1);
 }
 
@@ -21,10 +21,11 @@ if (!existsSync(fontsDir)) {
 rmSync(liteDir, { force: true, recursive: true });
 mkdirSync(liteDir, { recursive: true });
 
-const legacyHtml = readFileSync(legacyHtmlPath, 'utf8');
-const liteHtml = legacyHtml.replaceAll('public/fonts/', './fonts/');
+const liteSourceHtml = readFileSync(liteHtmlPath, 'utf8');
+const liteHtml = liteSourceHtml.replaceAll('public/fonts/', './fonts/');
 
 writeFileSync(join(liteDir, 'index.html'), liteHtml, 'utf8');
+writeFileSync(join(liteDir, 'lite.html'), liteHtml, 'utf8');
 writeFileSync(join(liteDir, 'legacy.html'), liteHtml, 'utf8');
 cpSync(fontsDir, join(liteDir, 'fonts'), { recursive: true });
 writeFileSync(join(liteDir, 'README.md'), renderReadme(), 'utf8');
@@ -38,7 +39,7 @@ function renderReadme() {
 
 ## 中文说明
 
-这是 LoudnessVis 的 Lite 分发目录，使用保留下来的 \`legacy.html\` 单文件页面作为演示版。
+这是 LoudnessVis 的 Lite 分发目录，使用保留下来的 \`lite.html\` 单文件页面作为演示版。
 
 适用场景：
 
@@ -49,7 +50,8 @@ function renderReadme() {
 目录说明：
 
 - \`index.html\`：默认入口，建议直接打开这个文件
-- \`legacy.html\`：与 \`index.html\` 内容一致，保留旧命名
+- \`lite.html\`：Lite HTML 主文件
+- \`legacy.html\`：兼容旧链接的别名文件，内容与 \`lite.html\` 相同
 - \`fonts/\`：Lite 版所需字体
 - \`start-lite.cmd\`：Windows 双击启动
 - \`start-lite.ps1\`：PowerShell 启动
@@ -63,12 +65,13 @@ function renderReadme() {
 建议：
 
 - 优先使用 Edge 或 Chrome
-- Lite 版只保留 legacy HTML demo，不包含 React 主界面、Electron 设备能力或 UV 启动器
+- 从这个版本开始，Release 中统一把这份单文件页面标为 Lite HTML；\`legacy.html\` 仅保留兼容别名
+- Lite 版只保留 Lite HTML demo，不包含 React 主界面、Electron 设备能力或 UV 启动器
 - 如果浏览器阻止本地音频访问，请改用“选择文件”按钮手动载入音频
 
 ## English
 
-This folder contains the Lite distribution of LoudnessVis, based on the preserved \`legacy.html\` standalone demo.
+This folder contains the Lite distribution of LoudnessVis, based on the preserved \`lite.html\` standalone page.
 
 Use this bundle when you need:
 
@@ -79,7 +82,8 @@ Use this bundle when you need:
 Folder contents:
 
 - \`index.html\`: default entry point
-- \`legacy.html\`: same content as \`index.html\`, kept for compatibility
+- \`lite.html\`: primary Lite HTML file
+- \`legacy.html\`: compatibility alias with the same content as \`lite.html\`
 - \`fonts/\`: local font assets required by the Lite demo
 - \`start-lite.cmd\`: one-click Windows launcher
 - \`start-lite.ps1\`: PowerShell launcher
@@ -93,14 +97,15 @@ How to use:
 Notes:
 
 - Edge or Chrome is recommended
-- The Lite bundle only includes the legacy HTML demo
+- Starting with this release line, the standalone page is labeled as Lite HTML in release notes; \`legacy.html\` remains as a compatibility alias
+- The Lite bundle only includes the Lite HTML demo
 - It does not include the React app, Electron device features, or the UV launcher
 `;
 }
 
 function renderPowerShellLauncher() {
   return `param(
-    [ValidateSet('index', 'legacy')]
+    [ValidateSet('index', 'lite', 'legacy')]
     [string]$Page = 'index'
 )
 
@@ -109,7 +114,11 @@ $ErrorActionPreference = 'Stop'
 try {
     Set-Location -LiteralPath $PSScriptRoot
 
-    $target = if ($Page -eq 'legacy') { 'legacy.html' } else { 'index.html' }
+    $target = switch ($Page) {
+        'lite'   { 'lite.html' }
+        'legacy' { 'legacy.html' }
+        default  { 'index.html' }
+    }
     $filePath = Join-Path $PSScriptRoot $target
 
     if (-not (Test-Path -LiteralPath $filePath)) {
@@ -135,6 +144,7 @@ setlocal
 cd /d "%~dp0"
 
 set "PAGE=index.html"
+if /i "%~1"=="lite" set "PAGE=lite.html"
 if /i "%~1"=="legacy" set "PAGE=legacy.html"
 
 if not exist "%PAGE%" (

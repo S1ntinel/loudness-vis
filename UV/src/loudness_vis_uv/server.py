@@ -16,7 +16,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--port", type=int, default=4318, help="Port to bind. Default: 4318")
     parser.add_argument(
         "--page",
-        choices=("hub", "dist", "legacy"),
+        choices=("hub", "dist", "lite", "legacy"),
         default="hub",
         help="Page to open automatically. Default: hub",
     )
@@ -30,7 +30,8 @@ def main(argv: list[str] | None = None) -> int:
 
     print(f"[uv] LoudnessVis demo server ready at http://{args.host}:{args.port}/")
     print(f"[uv] React build : http://{args.host}:{args.port}/dist/index.html")
-    print(f"[uv] Legacy demo : http://{args.host}:{args.port}/legacy.html")
+    print(f"[uv] Lite HTML  : http://{args.host}:{args.port}/lite.html")
+    print(f"[uv] Legacy alias: http://{args.host}:{args.port}/legacy.html")
 
     if not args.no_open:
         webbrowser.open(url)
@@ -44,6 +45,8 @@ def main(argv: list[str] | None = None) -> int:
 def page_path(page: str) -> str:
     if page == "dist":
         return "/dist/index.html"
+    if page == "lite":
+        return "/lite.html"
     if page == "legacy":
         return "/legacy.html"
     return "/"

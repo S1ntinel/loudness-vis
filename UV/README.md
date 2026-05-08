@@ -9,7 +9,7 @@
 它包含两部分内容：
 
 - React 构建版 demo
-- 保留的 `legacy.html` 单页 demo
+- 保留的 `lite.html` 单文件 Lite HTML
 
 这个 UV 包的目标是方便演示、测试和内部分享。
 它不是未来 Electron 设备能力的正式分发渠道。
@@ -81,19 +81,20 @@ uv tool run --from <wheel> loudness-vis-demo
 
 - `hub`
 - `dist`
-- `legacy`
+- `lite`
+- `legacy`（兼容别名）
 
 示例：
 
 ```powershell
 .\start-demo.ps1 --page dist
-.\start-demo.ps1 --page legacy --port 4321
+.\start-demo.ps1 --page lite --port 4321
 .\start-demo.ps1 --no-open
 ```
 
 ```cmd
 start-demo.cmd --page dist
-start-demo.cmd --page legacy --port 4321
+start-demo.cmd --page lite --port 4321
 start-demo.cmd --no-open
 ```
 
@@ -108,15 +109,15 @@ uv run loudness-vis-demo
 或运行分发 wheel：
 
 ```powershell
-uv tool run --from .\loudness_vis_demo-0.1.1-py3-none-any.whl loudness-vis-demo
+uv tool run --from .\loudness_vis_demo-0.2.0-py3-none-any.whl loudness-vis-demo
 ```
 
 ### 分发建议
 
 面向 demo 测试分发时，建议直接发送 `UV\dist` 目录中的以下文件：
 
-- `loudness_vis_demo-0.1.1-py3-none-any.whl`
-- `loudness_vis_demo-0.1.1.tar.gz`
+- `loudness_vis_demo-0.2.0-py3-none-any.whl`
+- `loudness_vis_demo-0.2.0.tar.gz`
 - `start-demo.cmd`
 - `start-demo.ps1`
 - `README.md`
@@ -144,7 +145,7 @@ start-demo.cmd
 It contains:
 
 - the built React demo
-- the retained single-file `legacy.html` demo
+- the retained single-file `lite.html` Lite HTML
 
 This UV package is intended for demos, testing, and internal sharing.
 It is not the long-term distribution path for the future Electron/device features.
@@ -216,19 +217,20 @@ Available pages:
 
 - `hub`
 - `dist`
-- `legacy`
+- `lite`
+- `legacy` (compatibility alias)
 
 Examples:
 
 ```powershell
 .\start-demo.ps1 --page dist
-.\start-demo.ps1 --page legacy --port 4321
+.\start-demo.ps1 --page lite --port 4321
 .\start-demo.ps1 --no-open
 ```
 
 ```cmd
 start-demo.cmd --page dist
-start-demo.cmd --page legacy --port 4321
+start-demo.cmd --page lite --port 4321
 start-demo.cmd --no-open
 ```
 
@@ -243,15 +245,15 @@ uv run loudness-vis-demo
 Or run directly from a wheel:
 
 ```powershell
-uv tool run --from .\loudness_vis_demo-0.1.1-py3-none-any.whl loudness-vis-demo
+uv tool run --from .\loudness_vis_demo-0.2.0-py3-none-any.whl loudness-vis-demo
 ```
 
 ### Recommended Demo Distribution
 
 For demo sharing, send the following files from `UV\dist`:
 
-- `loudness_vis_demo-0.1.1-py3-none-any.whl`
-- `loudness_vis_demo-0.1.1.tar.gz`
+- `loudness_vis_demo-0.2.0-py3-none-any.whl`
+- `loudness_vis_demo-0.2.0.tar.gz`
 - `start-demo.cmd`
 - `start-demo.ps1`
 - `README.md`

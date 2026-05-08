@@ -20,7 +20,7 @@ LoudnessVis focuses on making mastering-side characteristics easier to inspect v
 | --- | --- | --- |
 | React Web | Main development UI built with Vite + React | `npm run dev` |
 | Local demo server | Stable localhost launcher for testing | `npm run start:local` |
-| Legacy server route | Serve the retained single-file HTML demo on localhost | `npm run start:legacy` |
+| Lite HTML route | Serve the retained single-file Lite HTML on localhost | `npm run start:lite` |
 | Lite bundle | Shareable standalone HTML distribution | [`Releases`](https://github.com/S1ntinel/loudness-vis/releases) |
 | UV launcher | Distributable local web launcher for demos | [`UV/README.md`](./UV/README.md) |
 | Electron | Future desktop/device integration path | `npm run dev:electron` / `npm run build:exe` |
@@ -44,6 +44,12 @@ npm run build
 
 ```powershell
 npm run start:local
+```
+
+### Open the retained Lite HTML on localhost
+
+```powershell
+npm run start:lite
 ```
 
 ### Refresh the Lite bundle
@@ -70,7 +76,8 @@ npm run dev:electron
 | --- | --- |
 | `src/` | React application, audio engine, DSP helpers, and panels |
 | `public/` | static assets shared by web and packaging flows |
-| `legacy.html` | preserved single-file HTML demo |
+| `lite.html` | retained single-file Lite HTML source |
+| `legacy.html` | compatibility alias for the retained Lite HTML |
 | `lite/` | standalone distribution-friendly HTML Lite bundle |
 | `UV/` | Python/uv launcher package for local demo delivery |
 | `electron/` | Electron entry points for future desktop builds |
@@ -82,6 +89,7 @@ npm run dev:electron
 - Bundled font files are third-party assets. See [`THIRD_PARTY_NOTICES.md`](./THIRD_PARTY_NOTICES.md).
 - Generated folders such as `node_modules/`, `dist/`, `lite/`, `UV/dist/`, archives, and local logs are intentionally excluded from version control.
 - Distributable Lite and UV bundles are published through GitHub Releases instead of being stored in the main branch.
+- Release naming note: the retained standalone page is now labeled as `lite.html`; `legacy.html` and `npm run start:legacy` remain compatibility aliases.
 
 ## Roadmap
 

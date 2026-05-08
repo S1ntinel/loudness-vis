@@ -1,5 +1,5 @@
 import { spawnSync } from 'node:child_process';
-import { copyFileSync, readdirSync, rmSync } from 'node:fs';
+import { copyFileSync, mkdirSync, readdirSync, rmSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -7,6 +7,8 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const rootDir = resolve(__dirname, '..');
 const uvDir = join(rootDir, 'UV');
 const uvDistDir = join(uvDir, 'dist');
+
+mkdirSync(uvDistDir, { recursive: true });
 
 for (const entry of readdirSync(uvDistDir, { withFileTypes: true })) {
   if (!entry.isFile()) continue;

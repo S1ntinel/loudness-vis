@@ -45,8 +45,8 @@ const server = createServer(async (req, res) => {
       return;
     }
 
-    if (pathname === '/legacy.html') {
-      return streamFile(res, join(rootDir, 'legacy.html'));
+    if (pathname === '/lite.html' || pathname === '/legacy.html') {
+      return streamFile(res, join(rootDir, 'lite.html'));
     }
 
     if (pathname.startsWith('/dist/')) {
@@ -79,7 +79,8 @@ const selectedUrl = `${baseUrl}${pagePath(page)}`;
 
 console.log(`[local] LoudnessVis server ready at ${baseUrl}`);
 console.log(`[local] React build : ${baseUrl}/dist/index.html`);
-console.log(`[local] Legacy demo : ${baseUrl}/legacy.html`);
+console.log(`[local] Lite HTML  : ${baseUrl}/lite.html`);
+console.log(`[local] Legacy alias: ${baseUrl}/legacy.html`);
 
 if (shouldOpen) {
   openBrowser(selectedUrl);
@@ -112,11 +113,12 @@ function parseArgs(args) {
 }
 
 function normalizePage(value) {
-  return value === 'dist' || value === 'legacy' ? value : 'hub';
+  return value === 'dist' || value === 'lite' || value === 'legacy' ? value : 'hub';
 }
 
 function pagePath(value) {
   if (value === 'dist') return '/dist/index.html';
+  if (value === 'lite') return '/lite.html';
   if (value === 'legacy') return '/legacy.html';
   return '/';
 }
@@ -395,7 +397,7 @@ function renderHubPage(activePort) {
   <body>
     <main>
       <h1>LoudnessVis Local Hub</h1>
-      <p>本地稳定入口。React 构建版和 legacy demo 都通过 HTTP 提供，避免 file:// 模式的白屏和模块加载限制。</p>
+      <p>本地稳定入口。React 构建版和 Lite HTML 都通过 HTTP 提供，避免 file:// 模式的白屏和模块加载限制。</p>
       <div class="grid">
         <section class="card">
           <h2>React Build</h2>
@@ -405,10 +407,10 @@ function renderHubPage(activePort) {
           </div>
         </section>
         <section class="card">
-          <h2>Legacy Demo</h2>
-          <p>保留的单页 demo，便于展示思路和做快速对比。</p>
+          <h2>Lite HTML</h2>
+          <p>保留的单文件 Lite 本体；旧的 /legacy.html 路由继续作为兼容别名。</p>
           <div class="actions">
-            <a href="/legacy.html">打开</a>
+            <a href="/lite.html">打开</a>
           </div>
         </section>
       </div>

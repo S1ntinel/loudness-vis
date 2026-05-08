@@ -10,6 +10,12 @@
 
 `demo 0.1` 解决了"能跑"，`demo 0.2` 解决"看得清楚、能编辑、能对比"。整体没有改架构（仍然是 React + Vite + Electron + 可选 UV 启动器），而是围绕"分析"和"录音"两个 Tab 把日常使用闭环。
 
+### Release 标注
+
+- 保留下来的单文件 HTML 本体已标为 `lite.html`
+- 后续 release 统一按 Lite HTML 命名
+- `legacy.html`、`/legacy.html` 与 `start:legacy` 保留为兼容别名
+
 主要方向：
 
 - 分析 Tab 多了**频谱图**和**声场分析球**两个视图，原有面板都补齐了准星/缩放/拖动播放头交互

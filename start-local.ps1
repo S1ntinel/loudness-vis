@@ -1,5 +1,5 @@
 param(
-    [ValidateSet('hub', 'dist', 'legacy')]
+    [ValidateSet('hub', 'dist', 'lite', 'legacy')]
     [string]$Page = 'hub',
 
     [int]$Port = 4317,
