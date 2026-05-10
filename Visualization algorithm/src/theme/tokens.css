@@ -1,0 +1,91 @@
+/* ============ 字体 ============ */
+@font-face {
+  font-family: 'MiSans';
+  font-weight: 400;
+  font-style: normal;
+  src: url('/fonts/MiSans-Regular.woff2') format('woff2');
+  font-display: swap;
+}
+@font-face {
+  font-family: 'MiSans';
+  font-weight: 500;
+  font-style: normal;
+  src: url('/fonts/MiSans-Medium.woff2') format('woff2');
+  font-display: swap;
+}
+
+/* ============ 主题变量 ============ */
+:root {
+  /* 浅色（默认） */
+  --bg-grad:
+    radial-gradient(circle at 12% -5%, rgba(170, 200, 240, 0.55), transparent 45%),
+    radial-gradient(circle at 90% 8%,  rgba(220, 195, 235, 0.42), transparent 50%),
+    radial-gradient(circle at 55% 105%, rgba(180, 220, 215, 0.40), transparent 55%),
+    linear-gradient(135deg, #ebeef3 0%, #d8dde4 100%);
+  --bar-bg:        rgba(255, 255, 255, 0.55);
+  --bar-bg-thin:   rgba(255, 255, 255, 0.45);
+  --panel-bg:      rgba(252, 253, 254, 0.88);
+  --panel-bg-soft: rgba(248, 250, 253, 0.65);
+  --panel-border:  rgba(20, 30, 50, 0.10);
+  --panel-shadow:  0 1px 4px rgba(20, 30, 50, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.7);
+  --bar-bottom:    rgba(255, 255, 255, 0.6);
+  --divider:       rgba(20, 30, 50, 0.08);
+  --btn-bg:        rgba(255, 255, 255, 0.7);
+  --btn-bg-hover:  rgba(255, 255, 255, 0.92);
+  --btn-bg-active: rgba(235, 238, 244, 0.9);
+  --btn-border:    rgba(20, 30, 50, 0.10);
+  --text:          #1d2026;
+  --text-2:        #5a6273;
+  --text-3:        #8b94a3;
+  --grid:          rgba(35, 50, 90, 0.07);
+  --grid-strong:   rgba(35, 50, 90, 0.10);
+  --tooltip-bg:    rgba(255, 255, 255, 0.95);
+  --tooltip-border:rgba(20, 30, 50, 0.18);
+  --wave-unplayed: #bcc1cb;
+  --hover-cross:   rgba(232, 93, 74, 0.55);
+  --canvas-trail:  rgba(255, 255, 255, 0.16);
+
+  --tab-active:    #3b6db5;
+  --radius-panel:  14px;
+  --radius-card:   12px;
+  --radius-btn:    8px;
+}
+body.dark {
+  --bg-grad:
+    radial-gradient(circle at 10% -5%, rgba(80, 110, 170, 0.32), transparent 45%),
+    radial-gradient(circle at 92% 10%, rgba(140, 80, 150, 0.24), transparent 50%),
+    radial-gradient(circle at 55% 105%, rgba(40, 110, 100, 0.20), transparent 55%),
+    linear-gradient(135deg, #1f242e 0%, #0c1015 100%);
+  --bar-bg:        rgba(15, 18, 26, 0.62);
+  --bar-bg-thin:   rgba(15, 18, 26, 0.48);
+  --panel-bg:      rgba(8, 11, 18, 0.78);
+  --panel-bg-soft: rgba(15, 19, 28, 0.55);
+  --panel-border:  rgba(255, 255, 255, 0.10);
+  --panel-shadow:  0 1px 4px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  --bar-bottom:    rgba(255, 255, 255, 0.07);
+  --divider:       rgba(255, 255, 255, 0.06);
+  --btn-bg:        rgba(255, 255, 255, 0.06);
+  --btn-bg-hover:  rgba(255, 255, 255, 0.12);
+  --btn-bg-active: rgba(255, 255, 255, 0.04);
+  --btn-border:    rgba(255, 255, 255, 0.10);
+  --text:          #e8e8e8;
+  --text-2:        #a3a8b3;
+  --text-3:        #6b7280;
+  --grid:          rgba(150, 170, 220, 0.08);
+  --grid-strong:   rgba(150, 170, 220, 0.14);
+  --tooltip-bg:    rgba(28, 33, 43, 0.95);
+  --tooltip-border:rgba(255, 255, 255, 0.12);
+  --wave-unplayed: #4a4f5a;
+  --hover-cross:   rgba(232, 130, 110, 0.65);
+  --canvas-trail:  rgba(15, 18, 25, 0.22);
+}
+
+* { box-sizing: border-box; }
+html, body, #root { height: 100%; margin: 0; }
+body {
+  color: var(--text);
+  font: 16px/1.5 'MiSans', 'Mi Sans', 'PingFang SC', 'Microsoft YaHei UI', 'Microsoft YaHei', 'Segoe UI', sans-serif;
+  overflow: hidden;
+  background: var(--bg-grad);
+  transition: background 0.3s, color 0.3s;
+}
