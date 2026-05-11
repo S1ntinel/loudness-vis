@@ -5,6 +5,7 @@
 一个开源的音频可视化工具，把母带响度、波形削顶、动态范围、频率能量和立体声声场搬上屏幕，让“听不出来”的东西可以被看见。
 
 仓库地址：<https://github.com/S1ntinel/loudness-vis>
+感谢：<https://linux.do/>
 
 ## 这是什么
 
@@ -160,6 +161,7 @@ npm run dev:electron
 - GitHub：<https://github.com/S1ntinel/loudness-vis>
 - Releases：<https://github.com/S1ntinel/loudness-vis/releases>
 - 个人主页：<https://github.com/S1ntinel>
+- 感谢：<https://linux.do/>
 - 嵌入式开发 10 日学习路线：<https://github.com/S1ntinel/embedded-learning-roadmap>
 
 ## 许可证

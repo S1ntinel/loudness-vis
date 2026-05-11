@@ -5,6 +5,7 @@
 Open-source audio visualization toolkit for inspecting loudness-war traits in mastered music. LoudnessVis turns waveform clipping, dynamic-range collapse, frequency imbalance, stereo-field behavior, and LUFS-style loudness metrics into visual panels that are easier to reason about.
 
 Repository: <https://github.com/S1ntinel/loudness-vis>
+Thanks: [linux.do](https://linux.do/)
 
 ## Overview
 
@@ -164,6 +165,7 @@ Release assets are available from [GitHub Releases](https://github.com/S1ntinel/
 - GitHub: <https://github.com/S1ntinel/loudness-vis>
 - Releases: <https://github.com/S1ntinel/loudness-vis/releases>
 - Author profile: <https://github.com/S1ntinel>
+- Thanks: [linux.do](https://linux.do/)
 - Embedded learning roadmap: <https://github.com/S1ntinel/embedded-learning-roadmap>
 
 ## License
