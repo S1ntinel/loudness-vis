@@ -11,7 +11,7 @@ Thanks: [linux.do](https://linux.do/)
 
 [![LoudnessVis demo preview](./assets/demo/loudnessvis-demo.gif)](./assets/demo/loudnessvis-demo.mp4)
 
-Click the preview to open the 20-second MP4 demo clip.
+Click the preview to open the full MP4 demo video.
 
 ## Overview
 

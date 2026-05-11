@@ -11,7 +11,7 @@
 
 [![LoudnessVis 演示预览](./assets/demo/loudnessvis-demo.gif)](./assets/demo/loudnessvis-demo.mp4)
 
-点击上方预览图可打开 20 秒 MP4 演示片段。
+点击上方预览图可打开完整 MP4 演示视频。
 
 ## 这是什么
 
