@@ -171,6 +171,11 @@ npm run dev:electron
 - 感谢：<https://linux.do/>
 - 嵌入式开发 10 日学习路线：<https://github.com/S1ntinel/embedded-learning-roadmap>
 
+## 贡献者
+
+- Claude
+- Codex
+
 ## 许可证
 
 MIT

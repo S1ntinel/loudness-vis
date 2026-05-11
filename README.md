@@ -175,6 +175,11 @@ Release assets are available from [GitHub Releases](https://github.com/S1ntinel/
 - Thanks: [linux.do](https://linux.do/)
 - Embedded learning roadmap: <https://github.com/S1ntinel/embedded-learning-roadmap>
 
+## Contributors
+
+- Claude
+- Codex
+
 ## License
 
 MIT
