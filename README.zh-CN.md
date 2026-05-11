@@ -13,6 +13,20 @@
 
 点击上方预览图可打开完整 MP4 演示视频。
 
+## 界面截图
+
+分析面板：
+
+![LoudnessVis 分析面板](./assets/screenshots/analysis-panel.png)
+
+录音与多轨编辑：
+
+![LoudnessVis 录音与多轨编辑](./assets/screenshots/record-tracks.png)
+
+上传目标弹窗：
+
+![LoudnessVis 上传目标弹窗](./assets/screenshots/upload-target-modal.png)
+
 ## 这是什么
 
 LoudnessVis 是一个用 React + TypeScript 搭建的音频可视化项目，主要用于观察现代音乐母带中的响度战争特征：
@@ -136,6 +150,7 @@ npm run dev:electron
 | --- | --- |
 | `src/` | React 应用、音频引擎、DSP 工具和可视化面板 |
 | `assets/demo/` | README 演示资源：首页 GIF 预览图与跳转 MP4 片段 |
+| `assets/screenshots/` | README 产品截图：分析面板、录音流程和上传目标弹窗 |
 | `Visualization algorithm/` | 可视化面板算法和渲染逻辑的开源整理版 |
 | `public/` | Web 与打包流程共用的静态资源 |
 | `lite.html` | 保留下来的单文件 Lite HTML 源文件 |

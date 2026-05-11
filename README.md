@@ -13,6 +13,20 @@ Thanks: [linux.do](https://linux.do/)
 
 Click the preview to open the full MP4 demo video.
 
+## Screenshots
+
+Analysis dashboard:
+
+![LoudnessVis analysis dashboard](./assets/screenshots/analysis-panel.png)
+
+Recording and multi-track editor:
+
+![LoudnessVis recording and multi-track editor](./assets/screenshots/record-tracks.png)
+
+Upload target modal:
+
+![LoudnessVis upload target modal](./assets/screenshots/upload-target-modal.png)
+
 ## Overview
 
 LoudnessVis is built with React + TypeScript and focuses on visual analysis of mastering-side audio traits:
@@ -140,6 +154,7 @@ Release assets are available from [GitHub Releases](https://github.com/S1ntinel/
 | --- | --- |
 | `src/` | React app, audio engine, DSP helpers, and visualization panels |
 | `assets/demo/` | README demo assets: homepage GIF preview and linked MP4 clip |
+| `assets/screenshots/` | README product screenshots for the analysis, recording, and upload flows |
 | `Visualization algorithm/` | Open-source snapshot of the visualization panel algorithms |
 | `public/` | Static assets shared by web and packaging flows |
 | `lite.html` | Retained single-file Lite HTML source |
