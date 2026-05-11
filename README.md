@@ -7,6 +7,12 @@ Open-source audio visualization toolkit for inspecting loudness-war traits in ma
 Repository: <https://github.com/S1ntinel/loudness-vis>
 Thanks: [linux.do](https://linux.do/)
 
+## Demo
+
+[![LoudnessVis demo preview](./assets/demo/loudnessvis-demo.gif)](./assets/demo/loudnessvis-demo.mp4)
+
+Click the preview to open the 20-second MP4 demo clip.
+
 ## Overview
 
 LoudnessVis is built with React + TypeScript and focuses on visual analysis of mastering-side audio traits:
@@ -133,6 +139,7 @@ Release assets are available from [GitHub Releases](https://github.com/S1ntinel/
 | Path | Purpose |
 | --- | --- |
 | `src/` | React app, audio engine, DSP helpers, and visualization panels |
+| `assets/demo/` | README demo assets: homepage GIF preview and linked MP4 clip |
 | `Visualization algorithm/` | Open-source snapshot of the visualization panel algorithms |
 | `public/` | Static assets shared by web and packaging flows |
 | `lite.html` | Retained single-file Lite HTML source |
