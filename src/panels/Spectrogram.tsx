@@ -104,7 +104,8 @@ export default function SpectrogramPanel({ className }: { className?: string }) 
       const sizeChanged = w !== lastBmSizeRef.current.w || h !== lastBmSizeRef.current.h;
       const specChanged = spec !== lastSpecRef.current;
       if (specChanged || sizeChanged || !bitmapRef.current) {
-        const bmW = Math.max(1500, w);
+        // bitmap 宽度上限 6000：避免 timeBins=10000+ 让 ImageData ~30MB drawImage 上传过慢
+        const bmW = Math.min(6000, Math.max(spec.timeBins, w));
         const bmH = Math.max(200, h);
         bitmapRef.current = renderSpectrogramBitmap(spec, bmW, bmH);
         lastSpecRef.current = spec;
@@ -124,7 +125,7 @@ export default function SpectrogramPanel({ className }: { className?: string }) 
 
       // 频率轴刻度
       const fMin = 20;
-      const fMax = spec.sampleRate / 2;
+      const fMax = Math.min(spec.sampleRate / 2, 22000);
       const logMin = Math.log2(fMin);
       const logMax = Math.log2(fMax);
       const fToY = (f: number) => h * (1 - (Math.log2(f) - logMin) / (logMax - logMin));
@@ -132,10 +133,15 @@ export default function SpectrogramPanel({ className }: { className?: string }) 
       ctx2d.fillStyle = 'rgba(255, 255, 255, 0.85)';
       ctx2d.font = '11px MiSans, "Microsoft YaHei", sans-serif';
       ctx2d.textAlign = 'right';
-      [100, 1000, 10000].forEach(f => {
+      // 1-2-5 阶梯频率刻度
+      [20, 50, 100, 200, 500, 1000, 2000, 5000, 10000, 20000].forEach(f => {
         if (f > fMax) return;
         const y = fToY(f);
-        ctx2d.fillText(f >= 1000 ? f / 1000 + 'k' : String(f), w - 6, y - 2);
+        if (y < 8 || y > h - 4) return;
+        // 短刻度线
+        ctx2d.fillRect(w - 4, y, 4, 1);
+        const label = f >= 1000 ? f / 1000 + 'k' : String(f);
+        ctx2d.fillText(label, w - 8, y + 4);
       });
       ctx2d.textAlign = 'start';
 

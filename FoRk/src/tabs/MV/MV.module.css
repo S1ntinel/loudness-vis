@@ -1,0 +1,85 @@
+.container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  overflow: hidden;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--divider);
+}
+
+.title {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 500;
+  color: var(--text);
+}
+
+.controls {
+  display: flex;
+  gap: 8px;
+}
+
+.playBtn {
+  padding: 8px 20px;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-btn);
+  cursor: pointer;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.15s;
+}
+
+.playBtn:hover {
+  background: var(--tab-active);
+}
+
+.playBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.layout {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 16px;
+  min-height: 0;
+}
+
+.stageArea {
+  min-height: 0;
+  border-radius: var(--radius-panel);
+  overflow: hidden;
+}
+
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  overflow-y: auto;
+  min-height: 0;
+}
+
+/* 响应式 */
+@media (max-width: 1024px) {
+  .layout {
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr auto;
+  }
+  
+  .sidebar {
+    flex-direction: row;
+    overflow-x: auto;
+  }
+}

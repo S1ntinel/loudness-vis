@@ -57,12 +57,19 @@ export default function Goniometer({ className }: { className?: string }) {
       ctx2d.arc(cx, cy, radius, 0, Math.PI * 2);
       ctx2d.stroke();
 
-      // 散点（仅在播放时取数据）
+      // 散点（仅在播放时取数据）— 单层荧光（避免双层 shadowBlur 在 2048 fillRect 上累加）
       if (engine.isPlaying) {
         engine.lAna.getFloatTimeDomainData(engine.lBuf);
         engine.rAna.getFloatTimeDomainData(engine.rBuf);
-        ctx2d.fillStyle = 'rgba(59, 109, 181, 0.55)';
         const L = engine.lBuf, R = engine.rBuf;
+        const isDark = document.body.classList.contains('dark');
+        const accentColor = cssVar('--accent', '#3b6db5');
+        const glowColor = cssVar('--accent-glow', 'rgba(59, 109, 181, 0.4)');
+
+        ctx2d.fillStyle = accentColor;
+        ctx2d.globalAlpha = isDark ? 0.85 : 0.65;
+        ctx2d.shadowColor = glowColor;
+        ctx2d.shadowBlur = isDark ? 4 : 2;
         for (let i = 0; i < L.length; i++) {
           const side = (L[i] - R[i]) * SQRT_HALF;
           const mid  = (L[i] + R[i]) * SQRT_HALF;
@@ -70,6 +77,8 @@ export default function Goniometer({ className }: { className?: string }) {
           const y = cy - mid * radius;
           ctx2d.fillRect(x, y, 1.5, 1.5);
         }
+        ctx2d.shadowBlur = 0;
+        ctx2d.globalAlpha = 1;
       }
 
       // 标签

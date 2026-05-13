@@ -1,0 +1,421 @@
+.container {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--divider);
+}
+
+.title {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 500;
+  color: var(--text);
+}
+
+.refreshBtn {
+  padding: 8px 16px;
+  background: var(--btn-bg);
+  border: 1px solid var(--btn-border);
+  color: var(--text);
+  border-radius: var(--radius-btn);
+  cursor: pointer;
+  font: inherit;
+  font-size: 13px;
+  transition: all 0.15s;
+}
+.refreshBtn:hover {
+  background: var(--btn-bg-hover);
+}
+
+.error {
+  padding: 12px 16px;
+  background: rgba(232, 93, 74, 0.1);
+  border: 1px solid rgba(232, 93, 74, 0.3);
+  border-radius: 8px;
+  color: #e85d4a;
+  margin-bottom: 20px;
+  font-size: 14px;
+}
+
+.inlineError {
+  margin-top: 12px;
+  margin-bottom: 12px;
+  padding: 10px 14px;
+  background: rgba(232, 93, 74, 0.08);
+  border: 1px solid rgba(232, 93, 74, 0.22);
+  border-radius: 10px;
+  color: #e85d4a;
+  font-size: 13px;
+}
+
+.grid {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: 1200px;
+}
+
+.section {
+  background: var(--panel-bg);
+  backdrop-filter: blur(24px) saturate(1.5);
+  -webkit-backdrop-filter: blur(24px) saturate(1.5);
+  border: 1px solid var(--panel-border);
+  border-radius: var(--radius-panel);
+  padding: 16px 20px;
+  box-shadow: var(--panel-shadow);
+}
+
+.sectionTitle {
+  margin: 0 0 12px;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.icon {
+  font-size: 20px;
+}
+
+.count {
+  margin-left: auto;
+  padding: 2px 8px;
+  background: var(--btn-bg);
+  border-radius: 10px;
+  font-size: 12px;
+  color: var(--text-2);
+}
+
+.deviceList {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.deviceCard {
+  padding: 8px 12px;
+  background: var(--btn-bg);
+  border: 1px solid transparent;
+  border-radius: var(--radius-card);
+  cursor: pointer;
+  transition: all 0.15s;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.deviceCard:hover {
+  background: var(--btn-bg-hover);
+  border-color: var(--btn-border);
+}
+.deviceActive {
+  border-color: var(--accent);
+  background: rgba(59, 109, 181, 0.08);
+}
+
+.deviceInfo {
+  min-width: 0;
+  flex: 1;
+}
+
+.deviceName {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.deviceId {
+  display: none;
+}
+
+.deviceBadge {
+  padding: 2px 8px;
+  background: var(--accent);
+  color: #fff;
+  border-radius: 8px;
+  font-size: 10px;
+  font-weight: 500;
+  flex-shrink: 0;
+}
+
+.deviceActions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.outputLed {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--text-3);
+  opacity: 0.35;
+  box-shadow: 0 0 0 transparent;
+}
+
+.outputLedActive {
+  background: var(--accent);
+  opacity: 1;
+  animation: outputBreath 1.35s ease-in-out infinite;
+}
+
+@keyframes outputBreath {
+  0%, 100% {
+    transform: scale(0.9);
+    box-shadow: 0 0 0 0 var(--accent-glow);
+  }
+  50% {
+    transform: scale(1.25);
+    box-shadow: 0 0 14px 4px var(--accent-glow);
+  }
+}
+
+.empty {
+  padding: 24px;
+  text-align: center;
+  color: var(--text-3);
+  font-size: 14px;
+}
+
+/* 监控部分（独立 section） */
+.monitorSection {
+  /* 移除嵌套时的上边距/分割线，作为独立 section 时由 .section padding 提供间距 */
+}
+
+.monitorHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  font-size: 14px;
+  color: var(--text);
+}
+
+.monitorBtn {
+  padding: 6px 12px;
+  background: var(--btn-bg);
+  border: 1px solid var(--btn-border);
+  color: var(--text-2);
+  border-radius: 6px;
+  cursor: pointer;
+  font: inherit;
+  font-size: 12px;
+  transition: all 0.15s;
+}
+.monitorBtn:hover {
+  background: var(--btn-bg-hover);
+  color: var(--text);
+}
+.monitorBtnActive {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+}
+.monitorBtnActive:hover {
+  background: var(--tab-active);
+}
+
+.monitorHint {
+  font-size: 12px;
+  color: var(--text-3);
+  line-height: 1.5;
+}
+
+.levelMeter {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.levelBar {
+  flex: 1;
+  height: 24px;
+  background: var(--bar-bg);
+  border-radius: 12px;
+  overflow: hidden;
+  position: relative;
+}
+
+.levelFill {
+  height: 100%;
+  border-radius: 12px;
+  transition: width 0.05s linear, background 0.1s;
+}
+
+.levelValue {
+  min-width: 80px;
+  text-align: right;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+
+/* 系统信息 */
+.infoGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+
+.infoItem {
+  padding: 16px;
+  background: var(--btn-bg);
+  border-radius: var(--radius-card);
+  text-align: center;
+}
+
+.infoLabel {
+  font-size: 12px;
+  color: var(--text-3);
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.infoValue {
+  font-size: 20px;
+  font-weight: 500;
+  color: var(--accent);
+  font-variant-numeric: tabular-nums;
+}
+
+/* 应用程序音量控制 */
+.appVolumeSection {
+  /* 独立 section，无需再特殊 grid-column */
+}
+
+.appVolumeList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.appVolumeItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: var(--btn-bg);
+  border-radius: var(--radius-card);
+  transition: all 0.15s;
+}
+
+.appMuted {
+  opacity: 0.6;
+}
+
+.appMuteBtn {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--panel-bg);
+  border: 1px solid var(--btn-border);
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 20px;
+  transition: all 0.15s;
+  flex-shrink: 0;
+}
+.appMuteBtn:hover {
+  background: var(--btn-bg-hover);
+  transform: scale(1.05);
+}
+
+.appVolumeInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.appVolumeRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+
+.appVolumeName {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text);
+   min-width: 0;
+   flex: 1;
+}
+
+.appVolumeSlider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.slider {
+  flex: 1;
+  height: 6px;
+  accent-color: var(--accent);
+}
+
+.appVolumeValue {
+  min-width: 50px;
+  text-align: right;
+  font-size: 13px;
+  color: var(--text-2);
+  font-variant-numeric: tabular-nums;
+}
+
+.appIconBtn {
+  position: relative;
+  overflow: hidden;
+}
+
+.appIconImage {
+  width: 24px;
+  height: 24px;
+  display: block;
+  object-fit: contain;
+}
+
+.appIconFallback {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.appMuteOverlay {
+  position: absolute;
+  right: -3px;
+  bottom: -4px;
+  font-size: 13px;
+  line-height: 1;
+}
+
+.localMixerLabel {
+  margin-top: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-3);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* 响应式 */
+@media (max-width: 768px) {
+  .infoGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

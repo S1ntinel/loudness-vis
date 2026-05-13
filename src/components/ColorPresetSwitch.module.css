@@ -1,0 +1,37 @@
+.bar {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px;
+  background: var(--btn-bg);
+  border: 1px solid var(--btn-border);
+  border-radius: var(--radius-btn);
+}
+
+.label {
+  font-size: 11px;
+  color: var(--text-3);
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  margin-right: 2px;
+}
+
+.dot {
+  width: 18px;
+  height: 18px;
+  padding: 0;
+  border-radius: 50%;
+  border: 2px solid var(--btn-border);
+  background: var(--dot-color, #888);
+  cursor: pointer;
+  transition: transform 0.12s, border-color 0.15s, box-shadow 0.15s;
+  position: relative;
+}
+.dot:hover {
+  transform: scale(1.12);
+}
+.dotActive {
+  border-color: var(--dot-color, #fff);
+  box-shadow: 0 0 0 2px var(--btn-bg-active),
+              0 0 12px var(--dot-color, transparent);
+}

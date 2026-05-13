@@ -58,6 +58,9 @@ class AudioEngine {
   spectrogram: Spectrogram | null = null;
   colorMode: ColorMode = 'multiband';
 
+  private _volume = 0.6;
+  private _gainDb = 0;
+
   /** 频响面板叠加显示的对比通道（不影响主音频播放） */
   compareChannels: CompareChannel[] = [];
 
@@ -109,7 +112,7 @@ class AudioEngine {
       this.coloredPeaks = computeColoredPeaks(this.audioBuffer, 2000);
       this.waveformPeaks = { min: this.coloredPeaks.min, max: this.coloredPeaks.max };
       this.lufsResult = computeLufs(this.audioBuffer);
-      this.spectrogram = computeSpectrogram(this.audioBuffer, 1024, 1500);
+      this.spectrogram = computeSpectrogram(this.audioBuffer);
       this.stopSource();
       this.startInternal();
       this.notify();
@@ -132,7 +135,7 @@ class AudioEngine {
     this.coloredPeaks = computeColoredPeaks(buf, 2000);
     this.waveformPeaks = { min: this.coloredPeaks.min, max: this.coloredPeaks.max };
     this.lufsResult = computeLufs(buf);
-    this.spectrogram = computeSpectrogram(buf, 1024, 1500);
+    this.spectrogram = computeSpectrogram(buf);
     this.stopSource();
     this.startInternal();
     this.notify();
@@ -292,7 +295,18 @@ class AudioEngine {
   }
 
   setVolume(v: number): void {
-    this.gainNode.gain.value = v;
+    this._volume = Math.max(0, Math.min(1, v));
+    this.applyGain();
+  }
+
+  setGain(gainDb: number): void {
+    this._gainDb = gainDb;
+    this.applyGain();
+  }
+
+  /** 实际写入 gainNode：volume(0..1) × 10^(gainDb/20) */
+  private applyGain(): void {
+    this.gainNode.gain.value = this._volume * Math.pow(10, this._gainDb / 20);
   }
 
   /** 当前播放进度 0..1（即使暂停也能反映 pauseOffset）*/

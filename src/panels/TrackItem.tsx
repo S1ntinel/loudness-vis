@@ -64,7 +64,7 @@ export default function TrackItem({ track }: { track: Track }) {
       const startX = (track.trimStart / dur) * w;
       const endX   = (track.trimEnd   / dur) * w;
 
-      const playedColor = '#3b6db5';
+      const playedColor = cssVar('--accent', '#3b6db5');
       const dimColor    = cssVar('--wave-unplayed', '#bcc1cb');
 
       // 画波形（外部柔灰、中间饱和蓝）

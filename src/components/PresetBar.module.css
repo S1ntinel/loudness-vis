@@ -1,0 +1,60 @@
+.bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 32px;
+  padding: 0 14px;
+  background: var(--btn-bg);
+  border: 1px solid var(--btn-border);
+  border-radius: 16px;
+}
+
+.navBtn {
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: 1px solid var(--btn-border);
+  color: var(--text-2);
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 9px;
+  transition: background 0.15s, color 0.15s;
+  padding: 0;
+}
+.navBtn:hover { background: var(--btn-bg-hover); color: var(--text); }
+
+.name {
+  font-size: 13px;
+  color: var(--text);
+  font-weight: 500;
+  min-width: 64px;
+  text-align: center;
+  user-select: none;
+}
+
+.dots {
+  display: flex;
+  gap: 6px;
+  margin-left: 6px;
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--dot-color, #888);
+  border: 2px solid transparent;
+  cursor: pointer;
+  padding: 0;
+  transition: all 0.15s;
+  opacity: 0.45;
+}
+.dot:hover { opacity: 0.85; transform: scale(1.15); }
+.dotActive {
+  opacity: 1;
+  border-color: var(--dot-color, #888);
+  box-shadow: 0 0 10px var(--dot-color, #888);
+}

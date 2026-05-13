@@ -5,15 +5,20 @@ import { useEngineState } from './audio/useEngineState';
 import { useUIStore } from './store';
 import Analyze from './tabs/Analyze';
 import Record from './tabs/Record';
+import Devices from './tabs/Devices';
 import UploadTargetModal from './components/UploadTargetModal';
+import PresetBar from './components/PresetBar';
+import ColorPresetSwitch from './components/ColorPresetSwitch';
+import SettingsPanel from './components/SettingsPanel';
 
 export default function App() {
-  const { tab, setTab, theme, toggleTheme, fileName, volume, setVolume, setPendingUpload } = useUIStore();
+  const { tab, setTab, theme, toggleTheme, fileName, gain, setGain, setPendingUpload } = useUIStore();
   const { audioBuffer, isPlaying, pauseOffset } = useEngineState();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [dragActive, setDragActive] = useState(false);
   const dragDepthRef = useRef(0);
   const [pinned, setPinned] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
   const isElectron = typeof window !== 'undefined' && !!window.electronAPI;
 
   // 启动时同步 Electron 当前 alwaysOnTop 状态
@@ -81,8 +86,8 @@ export default function App() {
     return () => window.removeEventListener('keydown', onKey);
   }, []);
 
-  // 同步音量到引擎
-  useEffect(() => { engine.setVolume(volume); }, [volume]);
+  // 同步增益到引擎（音量条已经移除，volume 固定 1.0 的话直接用 gain 控制）
+  useEffect(() => { engine.setVolume(1); engine.setGain(gain); }, [gain]);
 
   // 播放按钮文字
   const playBtnText = !audioBuffer ? '▶ 播放'
@@ -96,11 +101,14 @@ export default function App() {
           type="file" accept="audio/*" ref={fileInputRef} hidden
           onChange={e => { const f = e.target.files?.[0]; if (f) setPendingUpload(f); }}
         />
+        <ColorPresetSwitch />
         <button className={s.btn} onClick={() => fileInputRef.current?.click()}>选择文件</button>
         <button className={s.btn} onClick={() => engine.toggle()} disabled={!audioBuffer}>
           {playBtnText}
         </button>
         <span className={s.fileName}>{fileName}</span>
+
+        <PresetBar />
 
         {/* Tab 切换 */}
         <button className={`${s.tabBtn} ${tab === 'analyze' ? s.active : ''}`} onClick={() => setTab('analyze')}>
@@ -127,17 +135,21 @@ export default function App() {
           </button>
         )}
         <button className={s.btn} onClick={toggleTheme}>{theme === 'dark' ? '深色' : '浅色'}</button>
-        <span className={s.labelText}>音量</span>
+        <button className={s.btn} onClick={() => setShowSettings(true)} title="设置">⚙ 设置</button>
+        <span className={s.labelText}>增益</span>
         <input
-          type="range" min={0} max={1} step={0.01}
-          value={volume}
-          onChange={e => setVolume(parseFloat(e.target.value))}
+          type="range" min={-12} max={12} step={0.1}
+          value={gain}
+          onChange={e => setGain(parseFloat(e.target.value))}
+          title={`增益 ${gain > 0 ? '+' : ''}${gain.toFixed(1)} dB（双击重置）`}
+          onDoubleClick={() => setGain(0)}
         />
+        <span className={s.gainValue}>{gain > 0 ? '+' : ''}{gain.toFixed(1)}dB</span>
       </header>
 
       {tab === 'analyze' && <Analyze />}
       {tab === 'record' && <Record />}
-      {tab === 'devices' && <div className={s.placeholder}>阶段 5 · 系统设备控制（开发中）</div>}
+      {tab === 'devices' && <Devices />}
       {tab === 'mv' && <div className={s.placeholder}>阶段 7 · MV 编辑器（开发中）</div>}
 
       <div className={`${s.dropzone} ${dragActive ? s.show : ''}`}>
@@ -145,6 +157,7 @@ export default function App() {
       </div>
 
       <UploadTargetModal />
+      {showSettings && <SettingsPanel onClose={() => setShowSettings(false)} />}
     </div>
   );
 }

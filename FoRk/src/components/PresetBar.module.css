@@ -1,0 +1,59 @@
+.bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 32px;
+  padding: 0 16px;
+  background: var(--btn-bg);
+  border: 1px solid var(--btn-border);
+  border-radius: 16px;
+}
+
+.navBtn {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--btn-bg);
+  border: 1px solid var(--btn-border);
+  color: var(--text-2);
+  border-radius: var(--radius-btn);
+  cursor: pointer;
+  font-size: 10px;
+  transition: background 0.15s;
+}
+.navBtn:hover { background: var(--btn-bg-hover); color: var(--text); }
+
+.name {
+  font-size: 13px;
+  color: var(--text);
+  font-weight: 500;
+  min-width: 60px;
+  text-align: center;
+  user-select: none;
+}
+
+.dots {
+  display: flex;
+  gap: 6px;
+  margin-left: 8px;
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--dot-color, #888);
+  border: 2px solid transparent;
+  cursor: pointer;
+  padding: 0;
+  transition: all 0.15s;
+  opacity: 0.5;
+}
+.dot:hover { opacity: 0.8; transform: scale(1.15); }
+.dotActive {
+  opacity: 1;
+  border-color: var(--dot-color, #888);
+  box-shadow: 0 0 8px var(--dot-color, #888);
+}

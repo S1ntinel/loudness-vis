@@ -8,44 +8,34 @@ import SoundField from '../../panels/SoundField';
 import ColorModeSwitch from '../../panels/ColorModeSwitch';
 import LufsDisplay from '../../panels/LufsDisplay';
 import SpectrumLegend from '../../panels/SpectrumLegend';
+import { useUIStore } from '../../store';
 import s from './Analyze.module.css';
 
 const TOP_ROW = 320;     // 声场+频响行高
 const SPLITTER = 6;      // 分隔条高度
 const MIN_PANEL = 80;    // 波形/频谱图各自最小高度
-const STORAGE_KEY = 'lvWaveRatio';
-const SF_KEY = 'lvSoundFieldMode';
-
-type SoundFieldMode = 'goniometer' | 'sphere';
 
 export default function Analyze() {
   const layoutRef = useRef<HTMLDivElement>(null);
   const draggingRef = useRef(false);
 
-  const [waveRatio, setWaveRatio] = useState<number>(() => {
-    try {
-      const v = parseFloat(localStorage.getItem(STORAGE_KEY) || '');
-      if (Number.isFinite(v) && v > 0.05 && v < 0.95) return v;
-    } catch { /* noop */ }
-    return 0.4;
-  });
+  const waveRatio = useUIStore(st => st.waveRatio);
+  const setWaveRatio = useUIStore(st => st.setWaveRatio);
+  const sfMode = useUIStore(st => st.sfMode);
+  const setSfMode = useUIStore(st => st.setSfMode);
+
   const [dragging, setDragging] = useState(false);
-  const [sfMode, setSfMode] = useState<SoundFieldMode>(() => {
-    try {
-      const v = localStorage.getItem(SF_KEY);
-      return v === 'sphere' ? 'sphere' : 'goniometer';
-    } catch {
-      return 'goniometer';
+  const [specFull, setSpecFull] = useState(false);
+
+  // 全图模式按 Esc 退出
+  useEffect(() => {
+    if (!specFull) return;
+    function onKey(e: KeyboardEvent) {
+      if (e.key === 'Escape') setSpecFull(false);
     }
-  });
-
-  useEffect(() => {
-    try { localStorage.setItem(STORAGE_KEY, String(waveRatio)); } catch { /* noop */ }
-  }, [waveRatio]);
-
-  useEffect(() => {
-    try { localStorage.setItem(SF_KEY, sfMode); } catch { /* noop */ }
-  }, [sfMode]);
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [specFull]);
 
   // 拖拽分隔条改变 waveRatio
   function onSplitterDown(e: React.MouseEvent) {
@@ -150,11 +140,17 @@ export default function Analyze() {
           title="拖动调整两面板高度比例（双击重置）"
           onDoubleClick={() => setWaveRatio(0.4)}
         />
-        <div className={`${s.panel} ${s.spectrogram}`}>
+        <div className={`${s.panel} ${s.spectrogram} ${specFull ? s.fullscreen : ''}`}>
           <h3 className={s.panelTitle}>
             <span className={s.triangle}>▶</span>
             频谱图
             <span className={s.panelTitleEn}>Spectrogram · time × log-freq · magma</span>
+            <span className={s.panelTitleSpacer} />
+            <button
+              className={s.modeBtn}
+              onClick={() => setSpecFull(v => !v)}
+              title={specFull ? '退出全图（Esc 也可）' : '让频谱图占满整个分析区域'}
+            >{specFull ? '⛶ 还原' : '⛶ 全图'}</button>
           </h3>
           <SpectrogramPanel className={`${s.panelCanvas} ${s.panelCanvasCrosshair}`} />
         </div>

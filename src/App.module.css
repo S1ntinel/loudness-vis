@@ -19,12 +19,12 @@
 }
 
 .topbar .btn {
-  padding: 7px 16px;
+  padding: 7px 14px;
   background: var(--btn-bg);
   border: 1px solid var(--btn-border);
   color: var(--text);
   cursor: pointer;
-  border-radius: 6px;
+  border-radius: var(--radius-btn);
   font: inherit;
   user-select: none;
   transition: background 0.15s, border-color 0.15s;
@@ -48,7 +48,7 @@
   border: 1px solid transparent;
   color: var(--text-2);
   cursor: pointer;
-  border-radius: 6px;
+  border-radius: var(--radius-btn);
   font: inherit;
   user-select: none;
 }
@@ -70,9 +70,16 @@
 
 .topbar .labelText { color: var(--text-2); }
 .topbar input[type='range'] {
-  width: 130px;
+  width: 110px;
   vertical-align: middle;
-  accent-color: #3b6db5;
+  accent-color: var(--accent, #3b6db5);
+}
+.topbar .gainValue {
+  font-size: 11px;
+  color: var(--text-2);
+  font-variant-numeric: tabular-nums;
+  min-width: 44px;
+  text-align: right;
 }
 
 .topbar .divider {

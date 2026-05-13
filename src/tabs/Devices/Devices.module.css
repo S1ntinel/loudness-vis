@@ -1,0 +1,342 @@
+.container {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--divider);
+}
+
+.title {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 500;
+  color: var(--text);
+}
+
+.refreshBtn {
+  padding: 8px 16px;
+  background: var(--btn-bg);
+  border: 1px solid var(--btn-border);
+  color: var(--text);
+  border-radius: var(--radius-btn);
+  cursor: pointer;
+  font: inherit;
+  font-size: 13px;
+  transition: all 0.15s;
+}
+.refreshBtn:hover {
+  background: var(--btn-bg-hover);
+}
+
+.error {
+  padding: 12px 16px;
+  background: rgba(232, 93, 74, 0.1);
+  border: 1px solid rgba(232, 93, 74, 0.3);
+  border-radius: 8px;
+  color: #e85d4a;
+  margin-bottom: 20px;
+  font-size: 14px;
+}
+
+/* 布局调整：左右两列输入/输出，下方一列音量合成器，再下方一列系统信息 */
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.section {
+  background: var(--panel-bg);
+  backdrop-filter: blur(24px) saturate(1.5);
+  -webkit-backdrop-filter: blur(24px) saturate(1.5);
+  border: 1px solid var(--panel-border);
+  border-radius: var(--radius-panel);
+  padding: 18px;
+  box-shadow: var(--panel-shadow);
+}
+
+/* 第 3 个 section（音量合成器）跨两列 */
+.appVolumeSection {
+  grid-column: 1 / -1;
+}
+/* 第 4 个 section（系统信息）也跨两列 */
+.section:last-child {
+  grid-column: 1 / -1;
+}
+
+.sectionTitle {
+  margin: 0 0 14px;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.icon {
+  font-size: 18px;
+}
+
+.count {
+  margin-left: auto;
+  padding: 2px 8px;
+  background: var(--btn-bg);
+  border-radius: 10px;
+  font-size: 11px;
+  color: var(--text-2);
+}
+
+.demoBadge {
+  margin-left: 8px;
+  padding: 2px 8px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  color: #e8a64a;
+  background: rgba(232, 166, 74, 0.15);
+  border: 1px solid rgba(232, 166, 74, 0.45);
+  border-radius: 6px;
+  cursor: help;
+}
+
+.demoNote {
+  font-size: 12px;
+  color: var(--text-3);
+  background: rgba(232, 166, 74, 0.06);
+  border-left: 3px solid rgba(232, 166, 74, 0.55);
+  padding: 8px 12px;
+  border-radius: 6px;
+  margin-bottom: 12px;
+  line-height: 1.5;
+}
+
+.deviceList {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 240px;
+  overflow-y: auto;
+}
+
+.deviceCard {
+  padding: 10px 14px;
+  background: var(--btn-bg);
+  border: 1.5px solid transparent;
+  border-radius: var(--radius-card);
+  cursor: pointer;
+  transition: all 0.15s;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+.deviceCard:hover {
+  background: var(--btn-bg-hover);
+  border-color: var(--btn-border);
+}
+.deviceActive {
+  border-color: var(--accent);
+  background: rgba(59, 109, 181, 0.08);
+}
+
+.deviceInfo { min-width: 0; flex: 1; }
+.deviceName {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.deviceId {
+  font-size: 10px;
+  color: var(--text-3);
+  margin-top: 2px;
+  font-family: monospace;
+}
+.deviceBadge {
+  padding: 3px 10px;
+  background: var(--accent);
+  color: #fff;
+  border-radius: 10px;
+  font-size: 10px;
+  font-weight: 500;
+  flex-shrink: 0;
+}
+
+.empty {
+  padding: 20px;
+  text-align: center;
+  color: var(--text-3);
+  font-size: 13px;
+}
+
+/* 监控部分 */
+.monitorSection {
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid var(--divider);
+}
+.monitorHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  font-size: 13px;
+  color: var(--text);
+}
+.monitorBtn {
+  padding: 5px 12px;
+  background: var(--btn-bg);
+  border: 1px solid var(--btn-border);
+  color: var(--text-2);
+  border-radius: 6px;
+  cursor: pointer;
+  font: inherit;
+  font-size: 12px;
+  transition: all 0.15s;
+}
+.monitorBtn:hover { background: var(--btn-bg-hover); color: var(--text); }
+.monitorBtnActive {
+  background: #e85d4a;
+  color: #fff;
+  border-color: #e85d4a;
+}
+.monitorBtnActive:hover { background: #d44a3a; }
+
+.levelMeter {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.levelBar {
+  flex: 1;
+  height: 18px;
+  background: var(--bar-bg);
+  border-radius: 9px;
+  overflow: hidden;
+  position: relative;
+}
+.levelFill {
+  height: 100%;
+  border-radius: 9px;
+  transition: width 0.05s linear, background 0.1s;
+}
+.levelValue {
+  min-width: 70px;
+  text-align: right;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+
+/* 系统信息 */
+.infoGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+.infoItem {
+  padding: 14px;
+  background: var(--btn-bg);
+  border-radius: var(--radius-card);
+  text-align: center;
+}
+.infoLabel {
+  font-size: 11px;
+  color: var(--text-3);
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.infoValue {
+  font-size: 18px;
+  font-weight: 500;
+  color: var(--accent);
+  font-variant-numeric: tabular-nums;
+}
+
+/* 应用音量列表 */
+.appVolumeList {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 10px;
+}
+.appVolumeItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  background: var(--btn-bg);
+  border-radius: var(--radius-card);
+  border: 1px solid var(--btn-border);
+  transition: all 0.15s;
+}
+.appMuted { opacity: 0.55; }
+.appMuteBtn {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--panel-bg);
+  border: 1px solid var(--btn-border);
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 18px;
+  transition: all 0.15s;
+  flex-shrink: 0;
+}
+.appMuteBtn:hover {
+  background: var(--btn-bg-hover);
+  transform: scale(1.05);
+}
+.appVolumeInfo { flex: 1; min-width: 0; }
+.appVolumeName {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+.appVolumeSlider {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.slider {
+  flex: 1;
+  height: 4px;
+  accent-color: var(--accent);
+}
+.appVolumeValue {
+  min-width: 44px;
+  text-align: right;
+  font-size: 12px;
+  color: var(--text-2);
+  font-variant-numeric: tabular-nums;
+}
+
+/* 响应式 */
+@media (max-width: 900px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+  .appVolumeSection,
+  .section:last-child {
+    grid-column: 1;
+  }
+  .infoGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

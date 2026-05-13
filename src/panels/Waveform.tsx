@@ -102,25 +102,27 @@ export default function Waveform({ className }: { className?: string }) {
 
       const useColored = engine.colorMode !== 'mono' && cPeaks;
       const colors = engine.colorMode === 'multiband' ? cPeaks?.colorsRgb : cPeaks?.colorsCentroid;
-      const playedColor   = '#3b6db5';
+      const playedColor   = cssVar('--accent', '#3b6db5');
       const unplayedColor = cssVar('--wave-unplayed', '#bcc1cb');
+      const glowColor     = cssVar('--wave-glow', 'rgba(59, 109, 181, 0.35)');
+      const isDark = document.body.classList.contains('dark');
 
+      // ===== 主波形：每像素一根 stroke（无 shadow，避开逐像素高斯模糊的性能陷阱） =====
+      ctx2d.lineWidth = 1.2;
       for (let px = 0; px < w; px++) {
-        // 当前像素对应的全曲 ratio → bin index
         const globalR = viewStart + (px / w) * viewRange;
         const i = Math.min(N - 1, Math.max(0, Math.floor(globalR * N)));
         const mn = peaks.min[i];
         const mx = peaks.max[i];
         const y1 = cy - mx * half;
         const y2 = cy - mn * half;
-        if (useColored && colors) {
-          ctx2d.strokeStyle = colors[i];
-          ctx2d.globalAlpha = (playHeadVisible && px <= playX) || (progress >= viewEnd) ? 1 : 0.40;
-          if (!playHeadVisible && progress < viewStart) ctx2d.globalAlpha = 0.40;
-        } else {
-          const beforePlay = playHeadVisible ? px <= playX : progress >= viewEnd;
-          ctx2d.strokeStyle = beforePlay ? playedColor : unplayedColor;
+        const isPlayedPx = playHeadVisible ? px <= playX : progress >= viewEnd;
+        if (isPlayedPx) {
+          ctx2d.strokeStyle = useColored && colors ? colors[i] : playedColor;
           ctx2d.globalAlpha = 1;
+        } else {
+          ctx2d.strokeStyle = useColored && colors ? colors[i] : unplayedColor;
+          ctx2d.globalAlpha = useColored ? 0.40 : 1;
         }
         ctx2d.beginPath();
         ctx2d.moveTo(px + 0.5, y1);
@@ -128,6 +130,22 @@ export default function Waveform({ className }: { className?: string }) {
         ctx2d.stroke();
       }
       ctx2d.globalAlpha = 1;
+
+      // ===== 单层 glow：用 lighter 复合 + 单色填充矩形覆盖整个已播放区域 =====
+      // 一次 shadow 渲染，避免逐像素 shadowBlur 在播放尾部累计成 6000+ 次模糊调用
+      if (playHeadVisible || progress >= viewEnd) {
+        const playedW = playHeadVisible ? playX : w;
+        ctx2d.save();
+        ctx2d.globalCompositeOperation = 'lighter';
+        ctx2d.shadowColor = glowColor;
+        ctx2d.shadowBlur = isDark ? 10 : 6;
+        ctx2d.fillStyle = playedColor;
+        ctx2d.globalAlpha = isDark ? 0.18 : 0.10;
+        // 在中线画一条横向发光带（短而高，shadow 散开成 glow）
+        ctx2d.fillRect(0, cy - 1, playedW, 2);
+        ctx2d.restore();
+      }
+      ctx2d.lineWidth = 1;
 
       // 播放头（在视图内才画）
       if (playHeadVisible) {
