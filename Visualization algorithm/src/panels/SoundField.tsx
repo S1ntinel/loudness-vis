@@ -37,9 +37,18 @@ export default function SoundField({ className }: { className?: string }) {
     fit();
     const ro = new ResizeObserver(fit);
     ro.observe(canvas);
+    const onVis = () => { isVisible = document.visibilityState === 'visible'; };
+    document.addEventListener('visibilitychange', onVis);
 
     let raf = 0;
-    function draw() {
+    let lastProcessTime = 0;
+    let isVisible = true;
+    // 缓存 CSS 变量
+    const cssGrid = cssVar('--grid-strong', 'rgba(35,50,90,0.10)');
+    const cssText3 = cssVar('--text-3', '#888');
+    const cssText2 = cssVar('--text-2', '#5a6273');
+    function draw(now = performance.now()) {
+      if (!isVisible) { raf = requestAnimationFrame(draw); return; }
       const w = canvas.clientWidth;
       const h = canvas.clientHeight;
       ctx2d.clearRect(0, 0, w, h);
@@ -49,7 +58,7 @@ export default function SoundField({ className }: { className?: string }) {
       const radius = Math.min(w, h) * 0.40;
 
       // 网格圈
-      const gridColor = cssVar('--grid-strong', 'rgba(35,50,90,0.10)');
+      const gridColor = cssGrid;
       ctx2d.strokeStyle = gridColor;
       ctx2d.lineWidth = 1;
       [0.4, 0.7, 1.0].forEach(rr => {
@@ -66,8 +75,9 @@ export default function SoundField({ className }: { className?: string }) {
       ctx2d.stroke();
 
       // 取实时频段数据
-      if (engine.isPlaying) {
+      if (engine.isPlaying && now - lastProcessTime >= 33) {
         soundFieldAnalyser.process();
+        lastProcessTime = now;
       }
       const bands = soundFieldAnalyser.getBands();
 
@@ -102,15 +112,15 @@ export default function SoundField({ className }: { className?: string }) {
       }
 
       // 头部（在中心）
-      ctx2d.fillStyle = cssVar('--text-3', '#aab0bf');
+      ctx2d.fillStyle = cssText3;
       ctx2d.beginPath();
       ctx2d.ellipse(cx, cy, radius * 0.10, radius * 0.13, 0, 0, Math.PI * 2);
       ctx2d.fill();
-      ctx2d.strokeStyle = cssVar('--text-2', '#5a6273');
+      ctx2d.strokeStyle = cssText2;
       ctx2d.lineWidth = 1;
       ctx2d.stroke();
       // 鼻尖（朝上 = 听者前方）
-      ctx2d.fillStyle = cssVar('--text-2', '#5a6273');
+      ctx2d.fillStyle = cssText2;
       ctx2d.beginPath();
       ctx2d.moveTo(cx, cy - radius * 0.15);
       ctx2d.lineTo(cx - 4, cy - radius * 0.10);
@@ -146,7 +156,7 @@ export default function SoundField({ className }: { className?: string }) {
       ctx2d.textBaseline = 'alphabetic';
 
       // 方向标注
-      ctx2d.fillStyle = cssVar('--text-3', '#888');
+      ctx2d.fillStyle = cssText3;
       ctx2d.font = '11px MiSans, "Microsoft YaHei", sans-serif';
       ctx2d.textAlign = 'center';
       ctx2d.fillText('前 Front', cx, cy - radius * 1.05 - 4);
@@ -164,6 +174,7 @@ export default function SoundField({ className }: { className?: string }) {
     return () => {
       cancelAnimationFrame(raf);
       ro.disconnect();
+      document.removeEventListener('visibilitychange', onVis);
     };
   }, []);
 

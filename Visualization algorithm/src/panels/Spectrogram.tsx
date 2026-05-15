@@ -1,15 +1,31 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { engine } from '../audio/engine';
-import { renderSpectrogramBitmap } from '../audio/spectrogram';
+import { renderSpectrogramBitmap, type ColorMap } from '../audio/spectrogram';
 import { cssVar } from '../theme';
 import { formatTime } from '../audio/stats';
 import { useUIStore } from '../store';
+import s from './Spectrogram.module.css';
+
+const COLOR_MAPS: { value: ColorMap; label: string }[] = [
+  { value: 'magma', label: 'Magma' },
+  { value: 'viridis', label: 'Viridis' },
+  { value: 'plasma', label: 'Plasma' },
+  { value: 'inferno', label: 'Inferno' },
+  { value: 'cool', label: 'Cool' },
+];
 
 export default function SpectrogramPanel({ className }: { className?: string }) {
+  const { t } = useTranslation();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const bitmapRef = useRef<HTMLCanvasElement | null>(null);
   const lastSpecRef = useRef<unknown>(null);
   const lastBmSizeRef = useRef({ w: 0, h: 0 });
+  const [colorMap, setColorMap] = useState<ColorMap>('magma');
+  const colorMapRef = useRef<ColorMap>('magma');
+  const lastColorMapRef = useRef<ColorMap>('magma');
+  // 同步 state → ref，让 useEffect 内的 draw 总能读到最新 colorMap
+  useEffect(() => { colorMapRef.current = colorMap; }, [colorMap]);
 
   const hoverRef = useRef({ x: -1, y: -1 });
   const dragRef = useRef({ active: false, wasPlaying: false });
@@ -95,7 +111,7 @@ export default function SpectrogramPanel({ className }: { className?: string }) 
       if (!spec) {
         ctx2d.fillStyle = cssVar('--text-3', '#9aa3b3');
         ctx2d.font = '14px MiSans, "Microsoft YaHei", sans-serif';
-        ctx2d.fillText('载入音频后显示频谱图（时间-频率热图，Shift+滚轮缩放，双击重置）', 12, h / 2);
+        ctx2d.fillText(t('analyze.spectrogram.loadHint'), 12, h / 2);
         raf = requestAnimationFrame(draw);
         return;
       }
@@ -103,13 +119,15 @@ export default function SpectrogramPanel({ className }: { className?: string }) 
       // 用预渲染位图（整曲范围、固定大尺寸），drawImage 时按视图切片
       const sizeChanged = w !== lastBmSizeRef.current.w || h !== lastBmSizeRef.current.h;
       const specChanged = spec !== lastSpecRef.current;
-      if (specChanged || sizeChanged || !bitmapRef.current) {
+      const colorChanged = colorMapRef.current !== lastColorMapRef.current;
+      if (specChanged || sizeChanged || colorChanged || !bitmapRef.current) {
         // bitmap 宽度 = max(timeBins, 显示宽度)，避免被拉伸出竖条纹
         const bmW = Math.max(spec.timeBins, w);
         const bmH = Math.max(200, h);
-        bitmapRef.current = renderSpectrogramBitmap(spec, bmW, bmH);
+        bitmapRef.current = renderSpectrogramBitmap(spec, bmW, bmH, colorMapRef.current);
         lastSpecRef.current = spec;
         lastBmSizeRef.current = { w, h };
+        lastColorMapRef.current = colorMapRef.current;
       }
 
       const { viewStart, viewEnd } = useUIStore.getState();
@@ -257,5 +275,25 @@ export default function SpectrogramPanel({ className }: { className?: string }) 
     };
   }, []);
 
-  return <canvas ref={canvasRef} className={className} />;
+  return (
+    <div style={{ position: 'relative', width: '100%', height: '100%' }}>
+      <canvas ref={canvasRef} className={className} />
+      <div className={s.colorMapPanel}>
+        <span className={s.colorMapLabel}>{t('analyze.spectrogram.colorMap')}</span>
+        {COLOR_MAPS.map(cm => (
+          <button
+            key={cm.value}
+            className={`${s.colorMapBtn} ${colorMap === cm.value ? s.colorMapBtnActive : ''}`}
+            onClick={() => {
+              setColorMap(cm.value);
+              bitmapRef.current = null;
+            }}
+            title={t('analyze.spectrogram.colorMapDesc', { name: cm.label })}
+          >
+            {cm.label}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
 }

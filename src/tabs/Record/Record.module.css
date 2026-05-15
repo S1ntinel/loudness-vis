@@ -1,266 +1,242 @@
-/* ============ 录音面板布局 ============ */
 .layout {
   display: grid;
-  grid-template-columns: minmax(280px, 380px) minmax(0, 1fr);
-  /* 上方录音区压到 180px，下方轨道列表吃满剩余空间 */
-  grid-template-rows: 180px minmax(220px, 1fr);
-  gap: 10px;
-  padding: 10px;
-  flex: 1;
-  min-height: 0;
+  grid-template-columns: 360px 1fr;
+  grid-template-rows: 240px 1fr;
+  gap: 12px;
+  height: 100%;
 }
+
 .panel {
-  background: var(--panel-bg);
-  backdrop-filter: blur(24px) saturate(1.5);
-  -webkit-backdrop-filter: blur(24px) saturate(1.5);
-  border: 1px solid var(--panel-border);
-  border-radius: var(--radius-panel);
-  padding: 14px 18px;
+  background: var(--hw-black);
+  border: 1px solid var(--hw-metal);
+  border-radius: 4px;
+  padding: 16px;
   position: relative;
   overflow: hidden;
-  box-shadow: var(--panel-shadow);
-  min-height: 0;
-  min-width: 0;
+  box-shadow: inset 0 2px 10px rgba(0,0,0,0.5);
 }
+
+.panel::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 50%;
+  background: var(--hw-acrylic-glare);
+  pointer-events: none;
+  z-index: 5;
+}
+
 .panelTitle {
   margin: 0 0 12px;
-  font-size: 14px;
-  color: var(--text);
-  letter-spacing: 0.3px;
-  font-weight: 500;
-  display: flex;
-  align-items: baseline;
-  gap: 8px;
-}
-.triangle { color: var(--accent); font-size: 10px; }
-.panelTitleEn {
   font-size: 11px;
-  color: var(--text-3);
+  color: var(--hw-metal);
   text-transform: uppercase;
-  letter-spacing: 0.8px;
-  font-weight: 400;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-bottom: 1px solid rgba(166, 164, 157, 0.2);
+  padding-bottom: 4px;
 }
 
-.controls { grid-column: 1; grid-row: 1; }
-.scroll   { grid-column: 2; grid-row: 1; padding: 12px 16px; }
-.list     {
-  grid-column: 1 / 3;
-  grid-row: 2;
+.triangle {
+  color: var(--vfd-red);
+  font-size: 8px;
+}
+
+.panelTitleEn {
+  font-size: 9px;
+  color: rgba(166, 164, 157, 0.5);
+  letter-spacing: 1px;
+  margin-left: auto;
+}
+
+/* ============ 录音控制面板 ============ */
+.controls {
+  grid-row: 1 / 3;
   display: flex;
   flex-direction: column;
+  background: var(--hw-cream);
+  box-shadow: var(--hw-outer-shadow);
+  border: 2px solid var(--hw-metal);
 }
 
-/* 控制区 */
 .recordCircle {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 10px 12px;
+  flex: 1;
+  overflow-y: auto;
+}
+
+.recordBtn {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  background: var(--vfd-red);
+  border: 5px solid var(--hw-metal);
+  box-shadow: 0 4px 0 var(--hw-ink), 0 8px 16px rgba(0,0,0,0.3);
+  color: #fff;
+  font-weight: 900;
+  font-size: 12px;
+  cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  flex-direction: row;
-  gap: 14px;
-  flex-wrap: wrap;
+  transition: all 0.1s;
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
-.recordBtn {
-  width: 72px;
-  height: 72px;
-  border-radius: 50%;
-  border: 3px solid #e85d4a;
-  background: rgba(232, 93, 74, 0.08);
-  color: #e85d4a;
-  font: inherit;
-  font-size: 14px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.15s;
-  user-select: none;
-  flex: 0 0 auto;
+
+.recordBtn:active {
+  transform: translateY(3px);
+  box-shadow: 0 1px 0 var(--hw-ink), 0 2px 4px rgba(0,0,0,0.3);
 }
-.recordBtn:hover { background: rgba(232, 93, 74, 0.18); }
-.recordBtn:active { transform: scale(0.96); }
+
 .recordBtn.recording {
-  background: #e85d4a;
-  color: #fff;
-  animation: pulse 1.4s ease-in-out infinite;
+  background: #ff0000;
+  animation: pulse 1.5s infinite;
+  box-shadow: 0 4px 0 var(--hw-ink), 0 0 20px rgba(255,0,0,0.4);
 }
+
 @keyframes pulse {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(232, 93, 74, 0.5); }
-  50%      { box-shadow: 0 0 0 10px rgba(232, 93, 74, 0); }
+  0% { opacity: 1; }
+  50% { opacity: 0.7; }
+  100% { opacity: 1; }
 }
 
 .timer {
-  font-size: 22px;
-  font-weight: 500;
-  color: var(--text);
-  font-variant-numeric: tabular-nums;
-  letter-spacing: 1px;
-  line-height: 1;
+  font-family: monospace;
+  font-size: 36px;
+  color: var(--vfd-red);
+  background: var(--hw-black);
+  padding: 8px 12px;
+  border-radius: 4px;
+  border: 2px solid var(--hw-metal);
+  box-shadow: inset 0 2px 8px rgba(0,0,0,0.8);
+  text-shadow: 0 0 10px var(--vfd-red);
+  letter-spacing: 2px;
 }
+
 .timerSub {
-  font-size: 11px;
-  color: var(--text-3);
+  font-size: 9px;
+  color: var(--hw-ink);
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
 
-.subBtns { display: flex; gap: 10px; margin-top: 6px; }
+.subBtns {
+  display: flex;
+  gap: 6px;
+}
+
 .subBtn {
-  padding: 6px 14px;
-  background: var(--btn-bg);
-  border: 1px solid var(--btn-border);
-  color: var(--text);
+  background: var(--hw-metal);
+  border: 1px solid var(--hw-ink);
+  border-bottom-width: 3px;
+  color: var(--hw-ink);
+  padding: 5px 12px;
+  font-size: 10px;
+  font-weight: 800;
+  border-radius: 3px;
   cursor: pointer;
-  border-radius: 6px;
-  font: inherit;
-}
-.subBtn:hover { background: var(--btn-bg-hover); }
-.subBtn:disabled { opacity: 0.4; cursor: not-allowed; }
-
-.permissionHint {
-  font-size: 13px;
-  color: var(--text-2);
-  text-align: center;
-  margin-top: 4px;
-}
-.permissionDenied { color: #e85d4a; }
-
-/* 滚动波形画布 */
-.scrollCanvas {
-  display: block;
-  width: 100%;
-  height: calc(100% - 28px);
+  text-transform: uppercase;
 }
 
-/* 录音列表 */
-.recList {
+.subBtn:active {
+  transform: translateY(2px);
+  border-bottom-width: 1px;
+}
+
+/* ============ 音轨列表部分 ============ */
+.list {
+  grid-column: 2;
+  grid-row: 2;
+  background: var(--hw-black);
+  padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  overflow-y: auto;
-  padding-right: 4px;
-  /* 高度 = 面板高 - 标题 - listHeader */
-  flex: 1;
-  min-height: 0;
-}
-.recEmpty {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex: 1;
-  color: var(--text-3);
-  font-size: 14px;
 }
 
-/* 列表头：上传按钮 + 多选/播放选中 */
 .listHeader {
+  padding: 8px 12px;
+  background: var(--hw-graphite);
+  border-bottom: 1px solid var(--hw-metal);
   display: flex;
   align-items: center;
   gap: 8px;
-  margin-bottom: 10px;
-  flex-wrap: wrap;
+  z-index: 10;
 }
+
 .listHeaderSpacer { flex: 1; }
+
 .uploadBtn {
-  padding: 6px 14px;
-  background: color-mix(in srgb, var(--accent) 12%, transparent);
-  border: 1px solid color-mix(in srgb, var(--accent) 50%, transparent);
-  color: var(--accent);
+  background: var(--vfd-cyan);
+  color: var(--hw-black);
+  border: 1px solid var(--hw-ink);
+  border-bottom-width: 3px;
+  padding: 4px 12px;
+  font-size: 10px;
+  font-weight: 900;
+  border-radius: 3px;
   cursor: pointer;
-  border-radius: 6px;
-  font: inherit;
-  font-weight: 500;
+  text-transform: uppercase;
 }
-.uploadBtn:hover {
-  background: color-mix(in srgb, var(--accent) 20%, transparent);
-  border-color: color-mix(in srgb, var(--accent) 75%, transparent);
-}
+
 .miniBtn {
-  padding: 5px 10px;
-  background: var(--btn-bg);
-  border: 1px solid var(--btn-border);
-  color: var(--text-2);
+  background: var(--hw-metal);
+  border: 1px solid var(--hw-ink);
+  border-bottom-width: 2px;
+  color: var(--hw-ink);
+  padding: 2px 8px;
+  font-size: 9px;
+  font-weight: 700;
+  border-radius: 2px;
   cursor: pointer;
-  border-radius: 5px;
-  font: inherit;
-  font-size: 12px;
 }
-.miniBtn:hover { background: var(--btn-bg-hover); color: var(--text); }
-.miniBtn:disabled { opacity: 0.4; cursor: not-allowed; }
 
 .playMultiBtn {
-  padding: 6px 16px;
-  background: var(--accent);
-  border: 1px solid var(--accent);
-  color: #fff;
+  background: var(--vfd-green);
+  color: var(--hw-black);
+  border: 1px solid var(--hw-ink);
+  border-bottom-width: 3px;
+  padding: 4px 12px;
+  font-size: 10px;
+  font-weight: 900;
+  border-radius: 3px;
   cursor: pointer;
-  border-radius: 6px;
-  font: inherit;
-  font-weight: 500;
-}
-.playMultiBtn:hover:not(:disabled) {
-  background: color-mix(in srgb, var(--accent) 80%, white);
-  border-color: color-mix(in srgb, var(--accent) 80%, white);
-}
-.playMultiBtn:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
-}
-.playMultiActive {
-  background: #e8a64a;
-  border-color: #e8a64a;
-}
-.playMultiActive:hover:not(:disabled) {
-  background: #efb86a;
-  border-color: #efb86a;
 }
 
-.listHint {
-  font-size: 11px;
-  color: var(--text-3);
+.recList {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
-/* TrackItem 样式 */
+/* ============ TrackItem (磁带风格) ============ */
 .trackItem {
+  background: #1a1c1e;
+  border: 1px solid var(--hw-metal);
+  border-radius: 4px;
+  padding: 12px;
   display: flex;
   flex-direction: column;
   gap: 8px;
-  padding: 12px 14px;
-  background: var(--btn-bg);
-  border: 1px solid var(--btn-border);
-  border-radius: 10px;
-  transition: border-color 0.15s, background 0.15s;
-}
-.trackItemSelected {
-  border-color: color-mix(in srgb, var(--accent) 55%, transparent);
-  background: color-mix(in srgb, var(--accent) 8%, transparent);
+  position: relative;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.4);
 }
 
-/* 缩略图勾选方框 */
-.checkbox {
-  width: 20px;
-  height: 20px;
-  border-radius: 4px;
-  border: 1.5px solid var(--btn-border);
-  background: var(--bar-bg);
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 13px;
-  color: transparent;
-  font-weight: 600;
-  padding: 0;
-  flex: 0 0 auto;
-  transition: all 0.15s;
-  user-select: none;
-}
-.checkbox:hover {
-  border-color: color-mix(in srgb, var(--accent) 65%, transparent);
-}
-.checkboxChecked {
-  background: var(--accent);
-  border-color: var(--accent);
-  color: #fff;
-}
-.checkboxChecked:hover {
-  background: color-mix(in srgb, var(--accent) 80%, white);
-  border-color: color-mix(in srgb, var(--accent) 80%, white);
+.trackItemSelected {
+  border-color: var(--vfd-orange);
+  box-shadow: 0 0 10px rgba(242, 106, 46, 0.3);
 }
 
 .trackHead {
@@ -268,77 +244,89 @@
   align-items: center;
   gap: 10px;
 }
-.trackIcon {
-  font-size: 16px;
-  width: 22px;
-  text-align: center;
-}
-.trackName {
-  font-size: 14px;
-  color: var(--text);
-  font-weight: 500;
-  flex: 1;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  cursor: text;
-}
-.trackMeta {
-  font-size: 12px;
-  color: var(--text-2);
-  font-variant-numeric: tabular-nums;
-  white-space: nowrap;
-}
-.trackCanvas {
-  display: block;
-  width: 100%;
-  height: 80px;
-  border-radius: 6px;
-  background: var(--bar-bg-thin);
+
+.checkbox {
+  width: 14px;
+  height: 14px;
+  background: #000;
+  border: 1px solid var(--hw-metal);
   cursor: pointer;
-  user-select: none;
-}
-.trackActions {
+  color: var(--vfd-orange);
   display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
 }
 
-/* 旧 recItem 名字编辑保留（同样适用 trackItem） */
-.recName {
-  font-size: 14px;
-  color: var(--text);
-  font-weight: 500;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.recNameInput {
-  font: inherit;
-  font-size: 14px;
-  background: var(--bar-bg);
-  border: 1px solid var(--btn-border);
-  color: var(--text);
-  padding: 4px 8px;
-  border-radius: 4px;
-  flex: 1;
-  min-width: 0;
-}
-.recDuration {
-  font-size: 14px;
-  color: var(--text-2);
-  font-variant-numeric: tabular-nums;
-}
-.recActions { display: flex; gap: 6px; }
-.recBtn {
-  padding: 5px 10px;
-  background: var(--btn-bg);
-  border: 1px solid var(--btn-border);
-  color: var(--text);
+.trackName {
+  font-family: 'MiSans', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--hw-white);
   cursor: pointer;
-  border-radius: 5px;
-  font: inherit;
-  font-size: 12px;
 }
-.recBtn:hover { background: var(--btn-bg-hover); }
-.recBtn:disabled { opacity: 0.4; cursor: not-allowed; }
-.recBtnDanger { color: #e85d4a; border-color: rgba(232, 93, 74, 0.3); }
+
+.trackMeta {
+  margin-left: auto;
+  font-family: monospace;
+  font-size: 11px;
+  color: var(--vfd-cyan);
+}
+
+.trackCanvas {
+  width: 100%;
+  height: 60px;
+  background: #080808;
+  border-radius: 2px;
+  border: 1px solid rgba(255,255,255,0.05);
+}
+
+.trackActions {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.recBtn {
+  background: var(--hw-graphite);
+  border: 1px solid var(--hw-metal);
+  color: var(--hw-metal);
+  padding: 3px 8px;
+  font-size: 9px;
+  font-weight: 700;
+  border-radius: 2px;
+  cursor: pointer;
+  text-transform: uppercase;
+}
+
+.recBtn:hover {
+  background: var(--hw-metal);
+  color: var(--hw-black);
+}
+
+.recBtnDanger {
+  color: var(--vfd-red);
+  border-color: var(--vfd-red);
+}
+
+.recEmpty {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--hw-metal);
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  opacity: 0.5;
+}
+
+.scroll {
+  grid-column: 2;
+  grid-row: 1;
+}
+
+.scrollCanvas {
+  width: 100%;
+  height: calc(100% - 28px);
+}

@@ -1,60 +1,90 @@
 .bar {
   display: flex;
   align-items: center;
-  gap: 8px;
-  height: 32px;
-  padding: 0 14px;
-  background: var(--btn-bg);
-  border: 1px solid var(--btn-border);
-  border-radius: 16px;
+  gap: 12px;
+  height: 40px;
+  padding: 0 16px;
+  background: var(--hw-graphite);
+  border: 1px solid var(--hw-ink);
+  border-radius: 4px;
+  box-shadow: inset 0 2px 6px rgba(0,0,0,0.5);
+  position: relative;
 }
 
 .navBtn {
-  width: 22px;
-  height: 22px;
+  width: 24px;
+  height: 24px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: transparent;
-  border: 1px solid var(--btn-border);
-  color: var(--text-2);
-  border-radius: 6px;
+  background: var(--hw-metal);
+  border: 1px solid var(--hw-ink);
+  border-bottom-width: 3px;
+  color: var(--hw-ink);
+  border-radius: 3px;
   cursor: pointer;
-  font-size: 9px;
-  transition: background 0.15s, color 0.15s;
-  padding: 0;
+  font-size: 10px;
+  font-weight: 900;
+  transition: all 0.05s;
 }
-.navBtn:hover { background: var(--btn-bg-hover); color: var(--text); }
+
+.navBtn:active {
+  transform: translateY(2px);
+  border-bottom-width: 1px;
+}
 
 .name {
-  font-size: 13px;
-  color: var(--text);
-  font-weight: 500;
-  min-width: 64px;
+  font-family: monospace;
+  font-size: 11px;
+  color: var(--vfd-cyan);
+  font-weight: 700;
+  text-transform: uppercase;
+  min-width: 100px;
   text-align: center;
-  user-select: none;
+  text-shadow: 0 0 8px var(--vfd-cyan);
+  background: rgba(0,0,0,0.3);
+  padding: 4px 8px;
+  border-radius: 2px;
 }
 
 .dots {
   display: flex;
-  gap: 6px;
-  margin-left: 6px;
+  gap: 10px;
+  margin-left: 8px;
+  padding: 4px 10px;
+  background: rgba(0,0,0,0.2);
+  border-radius: 20px;
+  border: 1px solid rgba(255,255,255,0.05);
 }
 
 .dot {
-  width: 10px;
-  height: 10px;
+  width: 12px;
+  height: 12px;
   border-radius: 50%;
-  background: var(--dot-color, #888);
-  border: 2px solid transparent;
+  background: #222;
+  border: 2px solid var(--hw-ink);
   cursor: pointer;
   padding: 0;
-  transition: all 0.15s;
-  opacity: 0.45;
+  transition: all 0.2s;
+  position: relative;
+  box-shadow: inset 0 1px 3px rgba(0,0,0,0.8);
 }
-.dot:hover { opacity: 0.85; transform: scale(1.15); }
+
 .dotActive {
-  opacity: 1;
-  border-color: var(--dot-color, #888);
-  box-shadow: 0 0 10px var(--dot-color, #888);
+  background: var(--dot-color, var(--vfd-orange));
+  box-shadow: 0 0 12px var(--dot-color, var(--vfd-orange)), inset 0 1px 2px rgba(255,255,255,0.5);
+  border-color: #fff;
+}
+
+/* 模拟 LED 指示灯效果 */
+.dotActive::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 4px;
+  height: 4px;
+  background: rgba(255,255,255,0.8);
+  border-radius: 50%;
+  filter: blur(1px);
 }

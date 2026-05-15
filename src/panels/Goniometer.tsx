@@ -6,17 +6,18 @@ import { useUIStore } from '../store';
 export default function Goniometer({ className }: { className?: string }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const theme = useUIStore(s => s.theme);
+  const preset = useUIStore(s => s.preset);
 
-  // 切主题时清屏（避免上一主题的拖尾残留）
   useEffect(() => {
     const c = canvasRef.current;
     if (!c) return;
     c.getContext('2d')?.clearRect(0, 0, c.clientWidth, c.clientHeight);
-  }, [theme]);
+  }, [theme, preset]);
 
   useEffect(() => {
     const canvas = canvasRef.current!;
     const ctx2d = canvas.getContext('2d')!;
+    let isVisible = true;
 
     function fit() {
       const r = canvas.getBoundingClientRect();
@@ -29,76 +30,52 @@ export default function Goniometer({ className }: { className?: string }) {
     fit();
     const ro = new ResizeObserver(fit);
     ro.observe(canvas);
-    window.addEventListener('resize', fit);
+    const onVis = () => { isVisible = document.visibilityState === 'visible'; };
+    document.addEventListener('visibilitychange', onVis);
 
     let raf = 0;
+    let lastFrameTime = 0;
     const SQRT_HALF = 0.7071067811865475;
+    const cssVfdGreen = cssVar('--vfd-green', '#6CFF9A');
 
-    function draw() {
+    function draw(now = performance.now()) {
+      if (!isVisible) { raf = requestAnimationFrame(draw); return; }
+      if (now - lastFrameTime < 32) { raf = requestAnimationFrame(draw); return; }
+      lastFrameTime = now;
+
       const w = canvas.clientWidth;
       const h = canvas.clientHeight;
 
-      // 拖尾
-      ctx2d.fillStyle = cssVar('--canvas-trail') || 'rgba(255, 255, 255, 0.16)';
+      // 拖尾效果
+      ctx2d.fillStyle = 'rgba(0, 0, 0, 0.25)';
       ctx2d.fillRect(0, 0, w, h);
 
-      // 网格
-      ctx2d.strokeStyle = cssVar('--grid-strong', 'rgba(35,50,90,0.10)');
-      ctx2d.lineWidth = 1;
-      ctx2d.beginPath();
-      ctx2d.moveTo(w / 2, 0); ctx2d.lineTo(w / 2, h);
-      ctx2d.moveTo(0, h / 2); ctx2d.lineTo(w, h / 2);
-      ctx2d.moveTo(0, 0); ctx2d.lineTo(w, h);
-      ctx2d.moveTo(w, 0); ctx2d.lineTo(0, h);
-      ctx2d.stroke();
       const cx = w / 2, cy = h / 2;
       const radius = Math.min(w, h) * 0.42;
-      ctx2d.beginPath();
-      ctx2d.arc(cx, cy, radius, 0, Math.PI * 2);
-      ctx2d.stroke();
 
-      // 散点（仅在播放时取数据）— 单层荧光（避免双层 shadowBlur 在 2048 fillRect 上累加）
+      ctx2d.strokeStyle = 'rgba(96, 242, 255, 0.08)';
+      ctx2d.beginPath(); ctx2d.moveTo(cx, 0); ctx2d.lineTo(cx, h); ctx2d.moveTo(0, cy); ctx2d.lineTo(w, cy); ctx2d.stroke();
+
       if (engine.isPlaying) {
         engine.lAna.getFloatTimeDomainData(engine.lBuf);
         engine.rAna.getFloatTimeDomainData(engine.rBuf);
         const L = engine.lBuf, R = engine.rBuf;
-        const isDark = document.body.classList.contains('dark');
-        const accentColor = cssVar('--accent', '#3b6db5');
-        const glowColor = cssVar('--accent-glow', 'rgba(59, 109, 181, 0.4)');
 
-        ctx2d.fillStyle = accentColor;
-        ctx2d.globalAlpha = isDark ? 0.85 : 0.65;
-        ctx2d.shadowColor = glowColor;
-        ctx2d.shadowBlur = isDark ? 4 : 2;
-        for (let i = 0; i < L.length; i++) {
+        ctx2d.fillStyle = cssVfdGreen;
+        ctx2d.beginPath();
+        // 降低渲染密度以提升性能
+        for (let i = 0; i < L.length; i += 4) {
           const side = (L[i] - R[i]) * SQRT_HALF;
           const mid  = (L[i] + R[i]) * SQRT_HALF;
-          const x = cx + side * radius;
-          const y = cy - mid * radius;
-          ctx2d.fillRect(x, y, 1.5, 1.5);
+          ctx2d.rect(cx + side * radius - 0.5, cy - mid * radius - 0.5, 1.2, 1.2);
         }
-        ctx2d.shadowBlur = 0;
-        ctx2d.globalAlpha = 1;
+        ctx2d.fill();
       }
-
-      // 标签
-      ctx2d.fillStyle = cssVar('--text-2', '#5a6273');
-      ctx2d.font = '14px MiSans, "Microsoft YaHei", sans-serif';
-      ctx2d.fillText('L',    10,        20);
-      ctx2d.fillText('R',    w - 22,    20);
-      ctx2d.fillText('Mid',  cx + 8,    18);
-      ctx2d.fillText('Side', w - 50,    cy - 6);
-
       raf = requestAnimationFrame(draw);
     }
     raf = requestAnimationFrame(draw);
-
-    return () => {
-      cancelAnimationFrame(raf);
-      ro.disconnect();
-      window.removeEventListener('resize', fit);
-    };
-  }, []);
+    return () => { cancelAnimationFrame(raf); ro.disconnect(); document.removeEventListener('visibilitychange', onVis); };
+  }, [theme, preset]);
 
   return <canvas ref={canvasRef} className={className} />;
 }

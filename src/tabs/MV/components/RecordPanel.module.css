@@ -1,0 +1,88 @@
+.panel {
+  background: var(--hw-cream);
+  background-image: var(--hw-grain);
+  border: 2px solid var(--hw-metal);
+  border-radius: 4px;
+  padding: 16px;
+  box-shadow: var(--hw-outer-shadow);
+}
+
+.title {
+  margin: 0 0 12px;
+  font-size: 11px;
+  font-weight: 900;
+  color: var(--hw-ink);
+  text-transform: uppercase;
+  border-bottom: 2px solid var(--hw-metal);
+  padding-bottom: 4px;
+}
+
+.formatSelect {
+  background: var(--hw-black);
+  border: 1px solid var(--hw-metal);
+  color: var(--vfd-cyan);
+  padding: 6px;
+  font-family: monospace;
+  font-size: 11px;
+  border-radius: 2px;
+  width: 100%;
+}
+
+.recordBtn {
+  width: 100%;
+  padding: 10px;
+  background: var(--vfd-red);
+  border: 1px solid var(--hw-ink);
+  border-bottom-width: 4px;
+  color: #fff;
+  font-weight: 900;
+  font-size: 11px;
+  text-transform: uppercase;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.1s;
+}
+
+.recordBtn:active {
+  transform: translateY(2px);
+  border-bottom-width: 1px;
+}
+
+.recordingIndicator {
+  background: var(--hw-black);
+  border: 1px solid var(--vfd-red);
+  padding: 8px;
+  border-radius: 4px;
+  color: var(--vfd-red);
+  font-family: monospace;
+  font-size: 11px;
+  text-align: center;
+  box-shadow: 0 0 10px rgba(230, 75, 58, 0.2);
+}
+
+.downloadBtn {
+  background: var(--vfd-green);
+  color: var(--hw-black);
+  border: 1px solid var(--hw-ink);
+  border-bottom-width: 3px;
+  padding: 8px;
+  font-size: 10px;
+  font-weight: 900;
+  width: 100%;
+  border-radius: 3px;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.clearBtn {
+  background: var(--hw-metal);
+  border: 1px solid var(--hw-ink);
+  color: var(--hw-ink);
+  padding: 6px;
+  font-size: 10px;
+  width: 100%;
+  border-radius: 3px;
+  text-transform: uppercase;
+  margin-top: 8px;
+  cursor: pointer;
+}

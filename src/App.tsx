@@ -1,34 +1,49 @@
-import { useEffect, useRef, useState } from 'react';
+import { Suspense, lazy, useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import s from './App.module.css';
 import { engine } from './audio/engine';
 import { useEngineState } from './audio/useEngineState';
 import { useUIStore } from './store';
+import { usePresetStore } from './store/usePresetStore';
 import Analyze from './tabs/Analyze';
-import Record from './tabs/Record';
-import Devices from './tabs/Devices';
-import UploadTargetModal from './components/UploadTargetModal';
 import PresetBar from './components/PresetBar';
-import ColorPresetSwitch from './components/ColorPresetSwitch';
-import SettingsPanel from './components/SettingsPanel';
+import LanguageSwitch from './components/LanguageSwitch';
+
+const Record = lazy(() => import('./tabs/Record'));
+const Devices = lazy(() => import('./tabs/Devices'));
+const MV = lazy(() => import('./tabs/MV'));
+const UploadTargetModal = lazy(() => import('./components/UploadTargetModal'));
+const SettingsPanel = lazy(() => import('./components/SettingsPanel'));
+
+const isElectron = !!window.electronAPI;
 
 export default function App() {
-  const { tab, setTab, theme, toggleTheme, fileName, gain, setGain, setPendingUpload } = useUIStore();
+  const { t } = useTranslation();
+  const { tab, setTab, theme, toggleTheme, fileName, volume, setVolume, gain, setGain, pendingUpload, setPendingUpload } = useUIStore();
   const { audioBuffer, isPlaying, pauseOffset } = useEngineState();
+  const loadPresets = usePresetStore(s => s.load);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [dragActive, setDragActive] = useState(false);
   const dragDepthRef = useRef(0);
   const [pinned, setPinned] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
-  const isElectron = typeof window !== 'undefined' && !!window.electronAPI;
 
-  // 启动时同步 Electron 当前 alwaysOnTop 状态
   useEffect(() => {
+    const handleGesture = (e: WheelEvent) => {
+      if (e.ctrlKey) e.preventDefault();
+    };
+    document.addEventListener('wheel', handleGesture, { passive: false });
+    return () => document.removeEventListener('wheel', handleGesture);
+  }, []);
+
+  useEffect(() => { loadPresets(); }, [loadPresets]);
+
+  useEffect(() => {        
     if (window.electronAPI?.getAlwaysOnTop) {
-      window.electronAPI.getAlwaysOnTop().then(v => setPinned(Boolean(v)));
+      window.electronAPI.getAlwaysOnTop().then(v => setPinned(Boolean(v)));     
     }
   }, []);
 
-  // 加载新音频时重置时间轴视图
   useEffect(() => {
     if (audioBuffer) useUIStore.getState().resetView();
   }, [audioBuffer]);
@@ -40,7 +55,6 @@ export default function App() {
     setPinned(next);
   }
 
-  // 拖放
   useEffect(() => {
     const onDragEnter = (e: DragEvent) => {
       e.preventDefault();
@@ -60,8 +74,8 @@ export default function App() {
       dragDepthRef.current = 0;
       setDragActive(false);
       const f = e.dataTransfer?.files?.[0];
-      if (f) setPendingUpload(f);    // 弹 Modal 让用户选目标
-    };
+      if (f) setPendingUpload(f);
+    };        
     window.addEventListener('dragenter', onDragEnter);
     window.addEventListener('dragleave', onDragLeave);
     window.addEventListener('dragover', onDragOver);
@@ -74,7 +88,6 @@ export default function App() {
     };
   }, [setPendingUpload]);
 
-  // 空格快捷键
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.code === 'Space' && (e.target as HTMLElement).tagName !== 'INPUT') {
@@ -86,13 +99,12 @@ export default function App() {
     return () => window.removeEventListener('keydown', onKey);
   }, []);
 
-  // 同步增益到引擎（音量条已经移除，volume 固定 1.0 的话直接用 gain 控制）
-  useEffect(() => { engine.setVolume(1); engine.setGain(gain); }, [gain]);
+  useEffect(() => { engine.setVolume(volume); }, [volume]);
+  useEffect(() => { engine.setGain(gain); }, [gain]);  
 
-  // 播放按钮文字
-  const playBtnText = !audioBuffer ? '▶ 播放'
-    : isPlaying ? '⏸ 暂停'
-    : pauseOffset > 0 ? '▶ 继续' : '▶ 播放';
+  const playBtnText = !audioBuffer ? t('toolbar.play')
+    : isPlaying ? t('toolbar.pause')
+    : pauseOffset > 0 ? t('toolbar.resume') : t('toolbar.play');
 
   return (
     <div className={s.app}>
@@ -101,63 +113,101 @@ export default function App() {
           type="file" accept="audio/*" ref={fileInputRef} hidden
           onChange={e => { const f = e.target.files?.[0]; if (f) setPendingUpload(f); }}
         />
-        <ColorPresetSwitch />
-        <button className={s.btn} onClick={() => fileInputRef.current?.click()}>选择文件</button>
-        <button className={s.btn} onClick={() => engine.toggle()} disabled={!audioBuffer}>
-          {playBtnText}
-        </button>
-        <span className={s.fileName}>{fileName}</span>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+          <span style={{ fontSize: '9px', fontWeight: 800, opacity: 0.6 }}>LOAD / EJECT</span>
+          <button className={s.btn} onClick={() => fileInputRef.current?.click()}>
+            {t('toolbar.selectFile')}
+          </button>
+        </div>
+        
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+          <span style={{ fontSize: '9px', fontWeight: 800, opacity: 0.6 }}>TRANSPORT</span>
+          <button className={s.btn} onClick={() => engine.toggle()} disabled={!audioBuffer}>
+            {playBtnText}
+          </button>
+        </div>
 
-        <PresetBar />
+        <span className={s.fileName}>
+          <span style={{ fontSize: '9px', color: 'var(--hw-metal)', marginRight: '8px' }}>SOURCE:</span>
+          {fileName || t('toolbar.noFile')}
+        </span>   
 
-        {/* Tab 切换 */}
-        <button className={`${s.tabBtn} ${tab === 'analyze' ? s.active : ''}`} onClick={() => setTab('analyze')}>
-          分析
-        </button>
-        <button className={`${s.tabBtn} ${tab === 'record' ? s.active : ''}`} onClick={() => setTab('record')}>
-          录音
-        </button>
-        <button className={`${s.tabBtn} ${tab === 'devices' ? s.active : ''}`} onClick={() => setTab('devices')}>
-          设备
-        </button>
-        <button className={`${s.tabBtn} ${tab === 'mv' ? s.active : ''}`} onClick={() => setTab('mv')}>
-          MV
-        </button>
+        <div className={s.presetWrapper}>
+          <PresetBar />
+        </div>
+
+        <div style={{ display: 'flex', alignItems: 'flex-end', height: '100%', gap: '4px' }}>
+          <button className={`${s.tabBtn} ${tab === 'analyze' ? s.active : ''}`} onClick={() => setTab('analyze')}>
+            {t('tabs.analyze')}
+            <div style={{ fontSize: '8px', opacity: 0.5 }}>ANALYZE</div>
+          </button>
+          <button className={`${s.tabBtn} ${tab === 'record' ? s.active : ''}`} onClick={() => setTab('record')}>
+            {t('tabs.record')}
+            <div style={{ fontSize: '8px', opacity: 0.5 }}>REC</div>
+          </button>
+          <button className={`${s.tabBtn} ${tab === 'devices' ? s.active : ''}`} onClick={() => setTab('devices')}>
+            {t('tabs.devices')}
+            <div style={{ fontSize: '8px', opacity: 0.5 }}>I/O</div>
+          </button>
+          <button className={`${s.tabBtn} ${tab === 'mv' ? s.active : ''}`} onClick={() => setTab('mv')}>
+            {t('tabs.mv')}
+            <div style={{ fontSize: '8px', opacity: 0.5 }}>WORKSTATION</div>
+          </button>
+        </div>
 
         <span className={s.divider} />
-        {isElectron && (
-          <button
-            className={`${s.btn} ${pinned ? s.btnPinned : ''}`}
-            onClick={togglePin}
-            title={pinned ? '取消置顶' : '窗口置顶'}
-          >
-            {pinned ? '📌 已置顶' : '📌 置顶'}
-          </button>
-        )}
-        <button className={s.btn} onClick={toggleTheme}>{theme === 'dark' ? '深色' : '浅色'}</button>
-        <button className={s.btn} onClick={() => setShowSettings(true)} title="设置">⚙ 设置</button>
-        <span className={s.labelText}>增益</span>
-        <input
-          type="range" min={-12} max={12} step={0.1}
-          value={gain}
-          onChange={e => setGain(parseFloat(e.target.value))}
-          title={`增益 ${gain > 0 ? '+' : ''}${gain.toFixed(1)} dB（双击重置）`}
-          onDoubleClick={() => setGain(0)}
-        />
-        <span className={s.gainValue}>{gain > 0 ? '+' : ''}{gain.toFixed(1)}dB</span>
+        
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', alignItems: 'center' }}>
+           <div style={{ display: 'flex', gap: '8px' }}>
+            {isElectron && (
+              <button
+                className={`${s.btn} ${pinned ? s.btnPinned : ''}`}
+                onClick={togglePin}
+                style={{ padding: '4px 8px', height: 'auto', fontSize: '10px' }}
+              >
+                {pinned ? 'UNPIN' : 'PIN'}
+              </button>
+            )}
+            <button 
+              className={s.btn} 
+              onClick={() => setShowSettings(true)}
+              style={{ padding: '4px 8px', height: 'auto', fontSize: '10px' }}
+            >
+              SET
+            </button>
+          </div>
+          <LanguageSwitch />
+        </div>
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+          <span className={s.labelText}>GAIN / {t('toolbar.gain')}</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <input
+              type="range" min={-12} max={12} step={0.1}
+              value={gain}
+              onChange={e => setGain(parseFloat(e.target.value))}
+              className={s.gainSlider}
+            />
+            <span className={s.gainValue}>{gain > 0 ? '+' : ''}{gain}dB</span>
+          </div>
+        </div>
       </header>
 
       {tab === 'analyze' && <Analyze />}
-      {tab === 'record' && <Record />}
-      {tab === 'devices' && <Devices />}
-      {tab === 'mv' && <div className={s.placeholder}>阶段 7 · MV 编辑器（开发中）</div>}
+      <Suspense fallback={null}>
+        {tab === 'record' && <Record />}
+        {tab === 'devices' && <Devices />}
+        {tab === 'mv' && <MV />}
+      </Suspense>
 
       <div className={`${s.dropzone} ${dragActive ? s.show : ''}`}>
-        ↓ 松开以加载音频文件
+        {t('toolbar.dropHint')}
       </div>
 
-      <UploadTargetModal />
-      {showSettings && <SettingsPanel onClose={() => setShowSettings(false)} />}
+      <Suspense fallback={null}>
+        {pendingUpload && <UploadTargetModal />}
+        {showSettings && <SettingsPanel onClose={() => setShowSettings(false)} />}
+      </Suspense>
     </div>
   );
 }

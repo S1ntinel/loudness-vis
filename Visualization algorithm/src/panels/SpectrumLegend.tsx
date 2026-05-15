@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { engine, type CompareChannel } from '../audio/engine';
 import s from '../tabs/Analyze/Analyze.module.css';
 
@@ -9,6 +10,7 @@ import s from '../tabs/Analyze/Analyze.module.css';
  * - 单击彩色点 → 切换 visible
  */
 export default function SpectrumLegend() {
+  const { t } = useTranslation();
   const [, force] = useState(0);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -21,9 +23,9 @@ export default function SpectrumLegend() {
 
   return (
     <div className={s.legendBar}>
-      <div className={s.legendItem} title="当前分析音频（实时频谱）">
+      <div className={s.legendItem}>
         <span className={s.legendDot} style={{ background: '#3b6db5' }} />
-        <span className={s.legendName}>主轨</span>
+        <span className={s.legendName}>{t('analyze.spectrum.mainTrack')}</span>
       </div>
       {engine.compareChannels.map((ch: CompareChannel) => (
         <div key={ch.id} className={s.legendItem}>
@@ -31,14 +33,14 @@ export default function SpectrumLegend() {
             className={s.legendDot}
             style={{ background: ch.visible ? ch.color : 'transparent', border: '2px solid ' + ch.color }}
             onClick={() => engine.toggleCompareVisible(ch.id)}
-            title={ch.visible ? '点击隐藏' : '点击显示'}
+            title={ch.visible ? t('common.clickHide') : t('common.clickShow')}
           />
           <span className={s.legendName}>{ch.name}</span>
-          <button className={s.legendClose} onClick={() => engine.removeCompareChannel(ch.id)} title="移除">✕</button>
+          <button className={s.legendClose} onClick={() => engine.removeCompareChannel(ch.id)} title={t('common.remove')}>✕</button>
         </div>
       ))}
-      <button className={s.addCompareBtn} onClick={() => fileInputRef.current?.click()} title="加入对比通道（叠加显示对比频谱）">
-        + 加入对比
+      <button className={s.addCompareBtn} onClick={() => fileInputRef.current?.click()} title={t('analyze.spectrum.addCompareDesc')}>
+        {t('analyze.spectrum.addCompare')}
       </button>
       <input
         type="file" accept="audio/*" multiple hidden ref={fileInputRef}

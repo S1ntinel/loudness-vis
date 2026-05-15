@@ -1,0 +1,101 @@
+.rack {
+  background: var(--hw-cream);
+  background-image: var(--hw-grain);
+  border: 2px solid var(--hw-metal);
+  border-radius: 4px;
+  padding: 16px;
+  box-shadow: var(--hw-outer-shadow);
+}
+
+.title {
+  margin: 0 0 12px;
+  font-size: 11px;
+  font-weight: 900;
+  color: var(--hw-ink);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  border-bottom: 2px solid var(--hw-metal);
+  padding-bottom: 4px;
+}
+
+.slots {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background: var(--hw-black);
+  padding: 8px;
+  border-radius: 4px;
+  box-shadow: inset 0 2px 10px rgba(0,0,0,0.6);
+}
+
+.slot {
+  padding: 10px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.05);
+  border-left: 4px solid var(--vfd-orange);
+  border-radius: 2px;
+  cursor: pointer;
+  transition: all 0.1s;
+}
+
+.slotHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.slotNumber {
+  font-family: monospace;
+  font-size: 10px;
+  color: var(--vfd-orange);
+  font-weight: 900;
+}
+
+.slotRename {
+  font-family: 'MiSans', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--vfd-cyan);
+}
+
+.orderBtn, .bypassBtn, .lockBtn {
+  background: var(--hw-metal);
+  border: 1px solid var(--hw-ink);
+  border-bottom-width: 2px;
+  color: var(--hw-ink);
+  padding: 2px 6px;
+  font-size: 9px;
+  font-weight: 900;
+  border-radius: 2px;
+  cursor: pointer;
+  text-transform: uppercase;
+}
+
+.orderBtn:active, .bypassBtn:active, .lockBtn:active {
+  transform: translateY(1px);
+  border-bottom-width: 1px;
+}
+
+.bypassBtnActive {
+  background: var(--vfd-orange);
+  color: #fff;
+}
+
+.slotSelect, .slotSubSelect {
+  width: 100%;
+  background: #000;
+  border: 1px solid var(--hw-metal);
+  color: var(--vfd-green);
+  font-family: monospace;
+  font-size: 11px;
+  padding: 4px;
+  border-radius: 2px;
+}
+
+.slotInfo {
+  font-size: 9px;
+  color: var(--text-3);
+  margin-top: 4px;
+  font-style: italic;
+}

@@ -15,7 +15,7 @@ export interface DeviceState {
   isMonitoring: boolean;
   sampleRate: number;
   channelCount: number;
-
+  
   setDevices: (devices: AudioDevice[]) => void;
   setSelectedInput: (id: string | null) => void;
   setSelectedOutput: (id: string | null) => void;
@@ -46,7 +46,7 @@ export const useDeviceStore = create<DeviceState>((set, get) => ({
       // 请求权限以获取设备标签
       await navigator.mediaDevices.getUserMedia({ audio: true });
       const deviceList = await navigator.mediaDevices.enumerateDevices();
-
+      
       const devices: AudioDevice[] = deviceList
         .filter(d => d.kind === 'audioinput' || d.kind === 'audiooutput')
         .map(d => ({
@@ -62,7 +62,7 @@ export const useDeviceStore = create<DeviceState>((set, get) => ({
       const { selectedInput, selectedOutput } = get();
       const inputs = devices.filter(d => d.kind === 'audioinput');
       const outputs = devices.filter(d => d.kind === 'audiooutput');
-
+      
       if (!selectedInput && inputs.length > 0) {
         set({ selectedInput: inputs[0].deviceId });
       }

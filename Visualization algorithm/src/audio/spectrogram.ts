@@ -69,9 +69,28 @@ export function computeSpectrogram(buf: AudioBuffer, fftSize = 2048, overlap = 0
   };
 }
 
+export type ColorMap = 'magma' | 'viridis' | 'plasma' | 'inferno' | 'cool';
+
+
+/** 调色板函数 → 输入 0..255 灰度 → RGB */
+export function colorMapRGB(v: number, map: ColorMap = 'magma'): { r: number; g: number; b: number } {
+  switch (map) {
+    case 'viridis':
+      return viridisRGB(v);
+    case 'plasma':
+      return plasmaRGB(v);
+    case 'inferno':
+      return infernoRGB(v);
+    case 'cool':
+      return coolRGB(v);
+    case 'magma':
+    default:
+      return magmaRGB(v);
+  }
+}
+
 /** Magma 调色板（简化版，6 段线性插值）→ 输入 0..255 灰度 → RGB */
 export function magmaRGB(v: number): { r: number; g: number; b: number } {
-  // 6 个关键控制点（参考 matplotlib magma）
   const stops: [number, number, number, number][] = [
     [0,   0,   0,   3  ],   // 黑
     [50,  20,  10,  60 ],   // 深紫
@@ -80,6 +99,61 @@ export function magmaRGB(v: number): { r: number; g: number; b: number } {
     [200, 240, 130, 30 ],   // 橙
     [255, 252, 230, 200],   // 浅黄
   ];
+  return interpolateStops(v, stops);
+}
+
+/** Viridis 调色板 */
+export function viridisRGB(v: number): { r: number; g: number; b: number } {
+  const stops: [number, number, number, number][] = [
+    [0,   68,  1,   84  ],   // 深紫
+    [50,  72,  33,  115 ],   // 紫蓝
+    [100, 65,  100, 170 ],   // 蓝绿
+    [150, 45,  160, 190 ],   // 青绿
+    [200, 140, 220, 100 ],   // 黄绿
+    [255, 253, 231, 37  ],   // 亮黄
+  ];
+  return interpolateStops(v, stops);
+}
+
+/** Plasma 调色板 */
+export function plasmaRGB(v: number): { r: number; g: number; b: number } {
+  const stops: [number, number, number, number][] = [
+    [0,   12,  7,   134 ],   // 深蓝
+    [50,  80,  20,  140 ],   // 紫
+    [100, 160, 40,  130 ],   // 紫红
+    [150, 220, 80,  80  ],   // 红橙
+    [200, 250, 160, 40  ],   // 橙黄
+    [255, 240, 249, 33  ],   // 亮黄
+  ];
+  return interpolateStops(v, stops);
+}
+
+/** Inferno 调色板 */
+export function infernoRGB(v: number): { r: number; g: number; b: number } {
+  const stops: [number, number, number, number][] = [
+    [0,   0,   0,   4   ],   // 黑
+    [50,  30,  10,  60  ],   // 深紫
+    [100, 120, 30,  60  ],   // 紫红
+    [150, 220, 80,  30  ],   // 红橙
+    [200, 250, 180, 50  ],   // 金黄
+    [255, 252, 255, 164 ],   // 白黄
+  ];
+  return interpolateStops(v, stops);
+}
+
+/** Cool 调色板（蓝到粉） */
+export function coolRGB(v: number): { r: number; g: number; b: number } {
+  const stops: [number, number, number, number][] = [
+    [0,   0,   100, 200 ],   // 深蓝
+    [64,  50,  150, 220 ],   // 蓝
+    [128, 150, 100, 200 ],   // 紫
+    [192, 220, 50,  150 ],   // 粉
+    [255, 255, 100, 180 ],   // 亮粉
+  ];
+  return interpolateStops(v, stops);
+}
+
+function interpolateStops(v: number, stops: [number, number, number, number][]): { r: number; g: number; b: number } {
   for (let i = 0; i < stops.length - 1; i++) {
     const [a, ar, ag, ab] = stops[i];
     const [b, br, bg, bb] = stops[i + 1];
@@ -92,11 +166,12 @@ export function magmaRGB(v: number): { r: number; g: number; b: number } {
       };
     }
   }
-  return { r: 252, g: 230, b: 200 };
+  const last = stops[stops.length - 1];
+  return { r: last[1], g: last[2], b: last[3] };
 }
 
 /** 把 spectrogram 渲染到一个内存 canvas（log 频率轴），返回该 canvas 用于 drawImage */
-export function renderSpectrogramBitmap(spec: Spectrogram, width: number, height: number): HTMLCanvasElement {
+export function renderSpectrogramBitmap(spec: Spectrogram, width: number, height: number, colorMap: ColorMap = 'magma'): HTMLCanvasElement {
   const c = document.createElement('canvas');
   c.width = width;
   c.height = height;
@@ -117,7 +192,7 @@ export function renderSpectrogramBitmap(spec: Spectrogram, width: number, height
     for (let px = 0; px < width; px++) {
       const t = Math.min(spec.timeBins - 1, Math.floor(px / width * spec.timeBins));
       const v = spec.data[t * spec.freqBins + fb];
-      const { r, g, b } = magmaRGB(v);
+      const { r, g, b } = colorMapRGB(v, colorMap);
       const idx = (py * width + px) * 4;
       img.data[idx]     = r;
       img.data[idx + 1] = g;

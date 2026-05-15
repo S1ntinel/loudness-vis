@@ -1,10 +1,13 @@
 import { useEffect, useRef } from 'react';
 import { engine } from '../audio/engine';
 import { cssVar } from '../theme';
+import { useUIStore } from '../store';
 
 export default function Spectrum({ className }: { className?: string }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const hoverRef = useRef({ x: -1, y: -1 });
+  const theme = useUIStore(s => s.theme);
+  const preset = useUIStore(s => s.preset);
 
   useEffect(() => {
     const canvas = canvasRef.current!;
@@ -33,13 +36,52 @@ export default function Spectrum({ className }: { className?: string }) {
     }
     canvas.addEventListener('mousemove', onMove);
     canvas.addEventListener('mouseleave', onLeave);
+    const onVis = () => { isVisible = document.visibilityState === 'visible'; };
+    document.addEventListener('visibilitychange', onVis);
 
     let raf = 0;
+    let lastFrameTime = 0;
+    let isVisible = true;
+    const pointX = new Float32Array(engine.specBuf.length);
+    const pointY = new Float32Array(engine.specBuf.length);
+    // 暂停时冻结最后一次有效数据
+    let frozenBuf: Float32Array | null = null;
 
-    function draw() {
+    // 缓存 CSS 变量，避免每帧 getComputedStyle 触发样式重算
+    let cssCache: Record<string, string> = {};
+    function refreshCssCache() {
+      cssCache = {
+        '--spec-bg': cssVar('--spec-bg', 'rgba(12, 15, 22, 0.85)'),
+        '--spec-grid': cssVar('--spec-grid', 'rgba(100, 130, 180, 0.12)'),
+        '--spec-text': cssVar('--spec-text', 'rgba(180, 200, 230, 0.7)'),
+        '--spec-stroke': cssVar('--spec-stroke', '#3b6db5'),
+        '--accent-glow': cssVar('--accent-glow', 'rgba(59, 109, 181, 0.5)'),
+        '--hover-cross': cssVar('--hover-cross', 'rgba(232,93,74,0.55)'),
+        '--tooltip-bg': cssVar('--tooltip-bg', 'rgba(255,255,255,0.95)'),
+        '--tooltip-border': cssVar('--tooltip-border', 'rgba(20,30,50,0.18)'),
+        '--text': cssVar('--text', '#1d2026'),
+      };
+    }
+    refreshCssCache();
+
+    function draw(now = performance.now()) {
+      if (!isVisible) {
+        raf = requestAnimationFrame(draw);
+        return;
+      }
+      if (now - lastFrameTime < 33) {
+        raf = requestAnimationFrame(draw);
+        return;
+      }
+      lastFrameTime = now;
+
       const w = canvas.clientWidth;
       const h = canvas.clientHeight;
       ctx2d.clearRect(0, 0, w, h);
+
+      // 频谱背景
+      ctx2d.fillStyle = cssCache['--spec-bg'];
+      ctx2d.fillRect(0, 0, w, h);
 
       const fs   = engine.ctx.sampleRate;
       const fMin = 20;
@@ -48,8 +90,8 @@ export default function Spectrum({ className }: { className?: string }) {
       const xToF = (x: number) => fMin * Math.pow(fMax / fMin, x / w);
 
       // 网格
-      ctx2d.strokeStyle = cssVar('--grid', 'rgba(35,50,90,0.07)');
-      ctx2d.fillStyle   = cssVar('--text-2', '#5a6273');
+      ctx2d.strokeStyle = cssCache['--spec-grid'];
+      ctx2d.fillStyle   = cssCache['--spec-text'];
       ctx2d.font        = '13px MiSans, "Microsoft YaHei", sans-serif';
       for (let db = 0; db >= -100; db -= 20) {
         const y = h * (-db / 100);
@@ -67,46 +109,56 @@ export default function Spectrum({ className }: { className?: string }) {
         ctx2d.fillText(f >= 1000 ? f / 1000 + 'k' : String(f), x + 5, h - 7);
       });
 
-      // 曲线
-      engine.specAna.getFloatFrequencyData(engine.specBuf);
-      const specDb = engine.specBuf;
+      // 获取频谱数据：播放时读 AnalyserNode，暂停时冻结最后数据
+      if (engine.isPlaying) {
+        engine.specAna.getFloatFrequencyData(engine.specBuf);
+        // 复制到冻结缓冲区
+        if (!frozenBuf || frozenBuf.length !== engine.specBuf.length) {
+          frozenBuf = new Float32Array(engine.specBuf.length);
+        }
+        frozenBuf.set(engine.specBuf);
+      }
+      const specDb = engine.isPlaying ? engine.specBuf : (frozenBuf ?? engine.specBuf);
       const N = specDb.length;
-
-      ctx2d.fillStyle = 'rgba(75, 130, 200, 0.30)';
-      ctx2d.beginPath();
-      ctx2d.moveTo(0, h);
-      let started = false;
+      const isDark = document.body.classList.contains('dark');
+      let pointCount = 0;
       for (let i = 1; i < N; i++) {
         const f = i * fs / (2 * N);
         if (f < fMin) continue;
         if (f > fMax) break;
-        const x = fToX(f);
         const v = Math.max(-100, Math.min(0, specDb[i]));
-        const y = h * (-v / 100);
-        if (!started) { ctx2d.lineTo(x, h); started = true; }
-        ctx2d.lineTo(x, y);
+        pointX[pointCount] = fToX(f);
+        pointY[pointCount] = h * (-v / 100);
+        pointCount++;
       }
-      ctx2d.lineTo(w, h);
-      ctx2d.closePath();
-      ctx2d.fill();
 
-      ctx2d.strokeStyle = '#3b6db5';
-      ctx2d.lineWidth   = 1.5;
-      ctx2d.beginPath();
-      started = false;
-      for (let i = 1; i < N; i++) {
-        const f = i * fs / (2 * N);
-        if (f < fMin) continue;
-        if (f > fMax) break;
-        const x = fToX(f);
-        const v = Math.max(-100, Math.min(0, specDb[i]));
-        const y = h * (-v / 100);
-        if (!started) { ctx2d.moveTo(x, y); started = true; }
-        else ctx2d.lineTo(x, y);
+      ctx2d.strokeStyle = cssCache['--spec-stroke'];
+      ctx2d.shadowColor = cssCache['--accent-glow'];
+      const glowLayers = [
+        { width: isDark ? 5 : 4, alpha: isDark ? 0.5 : 0.4, blur: isDark ? 20 : 14 },
+        { width: isDark ? 2.5 : 2, alpha: isDark ? 0.7 : 0.6, blur: isDark ? 10 : 6 },
+        { width: isDark ? 1.5 : 1.2, alpha: isDark ? 1.0 : 0.9, blur: isDark ? 6 : 4 },
+      ];
+      for (const layer of glowLayers) {
+        ctx2d.lineWidth = layer.width;
+        ctx2d.globalAlpha = layer.alpha;
+        ctx2d.shadowBlur = layer.blur;
+        ctx2d.beginPath();
+        if (pointCount > 0) {
+          ctx2d.moveTo(pointX[0], pointY[0]);
+          for (let i = 1; i < pointCount; i++) {
+            ctx2d.lineTo(pointX[i], pointY[i]);
+          }
+          if (pointX[pointCount - 1] < w - 1) {
+            ctx2d.lineTo(w, pointY[pointCount - 1]);
+          }
+        }
+        ctx2d.stroke();
       }
-      ctx2d.stroke();
+      ctx2d.shadowBlur = 0;
+      ctx2d.globalAlpha = 1;
 
-      // ===== 对比通道叠加（半透明描边，不填充以保证可读）=====
+      // ===== 对比通道叠加 =====
       for (const ch of engine.compareChannels) {
         if (!ch.visible) continue;
         const sp = ch.spectrum;
@@ -137,7 +189,7 @@ export default function Spectrum({ className }: { className?: string }) {
         const f = xToF(hx);
         const db = -100 * (hy / h);
 
-        ctx2d.strokeStyle = cssVar('--hover-cross', 'rgba(232,93,74,0.55)');
+        ctx2d.strokeStyle = cssCache['--hover-cross'];
         ctx2d.lineWidth = 1;
         ctx2d.beginPath();
         ctx2d.moveTo(hx, 0); ctx2d.lineTo(hx, h);
@@ -157,12 +209,12 @@ export default function Spectrum({ className }: { className?: string }) {
         if (bx + boxW > w - 4) bx = hx - boxW - 10;
         if (by < 4) by = hy + 12;
 
-        ctx2d.fillStyle = cssVar('--tooltip-bg', 'rgba(255,255,255,0.95)');
-        ctx2d.strokeStyle = cssVar('--tooltip-border', 'rgba(20,30,50,0.18)');
+        ctx2d.fillStyle = cssCache['--tooltip-bg'];
+        ctx2d.strokeStyle = cssCache['--tooltip-border'];
         ctx2d.lineWidth = 1;
         ctx2d.fillRect(bx, by, boxW, boxH);
         ctx2d.strokeRect(bx, by, boxW, boxH);
-        ctx2d.fillStyle = cssVar('--text', '#1d2026');
+        ctx2d.fillStyle = cssCache['--text'];
         ctx2d.fillText(text, bx + padX, by + 16);
       }
 
@@ -176,8 +228,9 @@ export default function Spectrum({ className }: { className?: string }) {
       window.removeEventListener('resize', fit);
       canvas.removeEventListener('mousemove', onMove);
       canvas.removeEventListener('mouseleave', onLeave);
+      document.removeEventListener('visibilitychange', onVis);
     };
-  }, []);
+  }, [theme, preset]);
 
   return <canvas ref={canvasRef} className={className} />;
 }

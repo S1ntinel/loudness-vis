@@ -39,7 +39,7 @@ LoudnessVis is built with React + TypeScript and focuses on visual analysis of m
 - LUFS-oriented readouts: Momentary, Short-term, Integrated, True Peak, and Loudness Range
 - peak, RMS, crest factor, DR-style range, clip ratio, and channel correlation metrics
 
-The project is currently in the `v0.2` stage and is released under the MIT license.
+The repository is now in the `1.0` stable release stage and is distributed under the MIT license.
 
 ## Visualization Algorithm Source
 
@@ -75,6 +75,50 @@ This directory is a source snapshot of the current panel algorithms and renderin
 - live scrolling recording waveform
 - uploaded or recorded track list with mini waveforms
 - trim handles, preview toggles, WAV export, and selected-track mix playback
+
+### Devices and System Audio Control
+
+- input / output device selection and live input-level monitoring
+- app output routing with fallback to the system default output
+- Windows volume mixer session controls for per-app mute / volume / activity state
+- pre-recording prompts to avoid starting captures that would only produce visuals or silent audio
+
+### MV Editing and Export
+
+- templates, themes, spectrum styles, dynamic backgrounds, and particle effects
+- asset library for audio / video / image / lyrics / font inputs
+- project import / export with zip / inline / path modes
+- export presets plus recording-time warnings when audio capture is not fully configured
+
+## How to use the four main sections
+
+### 1. Analyze
+
+- Start by loading an audio file with **Select File**.
+- Use the waveform for seeking, then inspect spectrum, spectrogram, sound field, and LUFS panels together.
+- Use `Shift + mouse wheel` to zoom the waveform / spectrogram timeline and double-click to reset the view.
+- This section is best for spotting clipping, loudness compression, spectral imbalance, and stereo issues.
+
+### 2. Record
+
+- Record from a microphone or add local audio files into the multi-track list.
+- If you want to capture system playback audio, configure a loopback device first (for example Stereo Mix); the app now warns before starting if the current source is not properly configured.
+- Each track supports trim, preview, rename, clip export, and selected-track mix playback.
+- Use this section for quick capture, trimming, reference track comparison, and WAV export.
+
+### 3. Devices
+
+- Choose input / output devices and watch live input levels.
+- Route the app output to a selected playback device or switch back to the default system output.
+- On the Windows desktop build, inspect Windows audio sessions and apply per-session mute / volume changes.
+- This section is the operational control center for routing, monitoring, and playback-device checks.
+
+### 4. MV
+
+- Import audio, video background, image layers, lyrics, and fonts, then combine them through templates and the effect rack.
+- Tune spectrum style, dynamic backgrounds, particle variants, text overlays, and asset visibility.
+- Save and restore project files for repeatable editing.
+- Before exporting, confirm the audio source path; the app warns when an export may otherwise contain visuals only.
 
 ### Delivery Modes
 
@@ -154,15 +198,16 @@ Release assets are available from [GitHub Releases](https://github.com/S1ntinel/
 | --- | --- |
 | `src/` | React app, audio engine, DSP helpers, and visualization panels |
 | `assets/demo/` | README demo assets: homepage GIF preview and linked MP4 clip |
+| `assets/icons/` | Application and installer icons |
 | `assets/screenshots/` | README product screenshots for the analysis, recording, and upload flows |
 | `Visualization algorithm/` | Open-source snapshot of the visualization panel algorithms |
 | `public/` | Static assets shared by web and packaging flows |
 | `lite.html` | Retained single-file Lite HTML source |
 | `legacy.html` | Compatibility alias for the retained Lite HTML |
-| `lite/` | Standalone distribution-friendly HTML Lite bundle |
 | `UV/` | Python / uv launcher package for local demo delivery |
 | `electron/` | Electron entry points for desktop builds |
 | `scripts/` | Build, sync, and packaging scripts |
+| `docs/` | Development log and release notes |
 
 ## Release Notes
 

@@ -46,6 +46,14 @@
   --canvas-trail:  rgba(255, 255, 255, 0.16);
 
   --tab-active:    #3b6db5;
+  --accent:        #3b6db5;
+  --accent-glow:   rgba(59, 109, 181, 0.4);
+  --wave-glow:     rgba(59, 109, 181, 0.35);
+  --spec-fill:     rgba(59, 109, 181, 0.15);
+  --spec-stroke:   #3b6db5;
+  --spec-bg:       rgba(250, 251, 252, 0.95);
+  --spec-grid:     rgba(100, 130, 180, 0.15);
+  --spec-text:     rgba(100, 120, 150, 0.6);
   --radius-panel:  14px;
   --radius-card:   12px;
   --radius-btn:    8px;
@@ -78,6 +86,54 @@ body.dark {
   --wave-unplayed: #4a4f5a;
   --hover-cross:   rgba(232, 130, 110, 0.65);
   --canvas-trail:  rgba(15, 18, 25, 0.22);
+  --accent:        #5a8fd8;
+  --accent-glow:   rgba(90, 143, 216, 0.5);
+  --wave-glow:     rgba(90, 143, 216, 0.45);
+  --spec-fill:     rgba(90, 143, 216, 0.20);
+  --spec-stroke:   #5a8fd8;
+  --spec-bg:       rgba(16, 20, 28, 0.95);
+  --spec-grid:     rgba(100, 140, 200, 0.12);
+  --spec-text:     rgba(160, 180, 210, 0.5);
+}
+
+/* ============ 绿色预设 ============ */
+body.preset-green,
+body.preset-cyan {
+  --accent:        #00c8a0;
+  --accent-glow:   rgba(0, 200, 160, 0.6);
+  --tab-active:    #00c8a0;
+  --wave-glow:     rgba(0, 200, 160, 0.55);
+  --spec-fill:     rgba(0, 200, 160, 0.18);
+  --spec-stroke:   #00c8a0;
+  --spec-grid:     rgba(0, 200, 160, 0.12);
+}
+body.preset-green.dark,
+body.preset-cyan.dark {
+  --accent:        #00e8c0;
+  --accent-glow:   rgba(0, 232, 192, 0.7);
+  --wave-glow:     rgba(0, 232, 192, 0.6);
+  --spec-fill:     rgba(0, 232, 192, 0.25);
+  --spec-stroke:   #00e8c0;
+  --spec-grid:     rgba(0, 232, 192, 0.15);
+}
+
+/* ============ 粉色预设 ============ */
+body.preset-pink {
+  --accent:        #e8559a;
+  --accent-glow:   rgba(232, 85, 154, 0.6);
+  --tab-active:    #e8559a;
+  --wave-glow:     rgba(232, 85, 154, 0.55);
+  --spec-fill:     rgba(232, 85, 154, 0.18);
+  --spec-stroke:   #e8559a;
+  --spec-grid:     rgba(232, 85, 154, 0.12);
+}
+body.preset-pink.dark {
+  --accent:        #ff6eb0;
+  --accent-glow:   rgba(255, 110, 176, 0.7);
+  --wave-glow:     rgba(255, 110, 176, 0.6);
+  --spec-fill:     rgba(255, 110, 176, 0.25);
+  --spec-stroke:   #ff6eb0;
+  --spec-grid:     rgba(255, 110, 176, 0.15);
 }
 
 * { box-sizing: border-box; }

@@ -1,40 +1,45 @@
 # Visualization algorithm
 
-This directory is an open-source snapshot of the visualization-related implementation used by the LoudnessVis analysis page.
+This directory is a **source snapshot mirror** of the current LoudnessVis analysis / visualization pipeline.
 
-It keeps the original source layout so the algorithm code and the panel code can still be read with the same relative imports as the application.
+It intentionally keeps the same directory structure and relative imports as the live app source, so the code can be reviewed independently without rewriting module boundaries.
 
 Chinese notes: [`Visualization algorithm_CN.md`](./Visualization%20algorithm_CN.md)
 
-## Scope
+## What is included
 
-The snapshot focuses on the analysis and visualization panels:
+The snapshot currently mirrors the parts of the repository that directly support audio analysis, visualization rendering, and the analysis/track visualization workflow:
 
-- waveform overview and color mapping
-- real-time spectrum
-- average spectrum comparison
-- spectrogram generation and rendering
-- goniometer / mid-side stereo view
-- four-band sound-field view
-- loudness and dynamic-range metrics
-- LUFS / true-peak / LRA display
+- audio DSP and metric computation
+- analysis-page orchestration
+- canvas visualization panels
+- track / waveform visualization helpers used by the recording workflow
+- minimal shared store + theme dependencies required by those panels
 
-It intentionally excludes unrelated app surfaces such as recording track management, Electron shell code, UV packaging, and release scripts.
+## Mirrored file groups
 
-## Source Map
+| Group | Mirrored paths |
+| --- | --- |
+| Audio / DSP core | `src/audio/*.ts` |
+| Visualization panels | `src/panels/*.tsx`, `src/panels/Spectrogram.module.css` |
+| Analyze page | `src/tabs/Analyze/*` |
+| Minimal shared store | `src/store/index.ts` |
+| Theme dependencies | `src/theme/index.ts`, `src/theme/tokens.css` |
+
+## Source map
 
 | Area | Files | Purpose |
 | --- | --- | --- |
-| FFT and DSP primitives | `src/audio/fft.ts`, `src/audio/dsp.ts` | Radix-2 FFT, Hann window, biquad filter helpers |
-| Waveform color analysis | `src/audio/coloredPeaks.ts` | Slot-based waveform peaks, spectral centroid hue mapping, low/mid/high RGB mapping |
-| Spectrum analysis | `src/audio/avgSpectrum.ts`, `src/panels/Spectrum.tsx`, `src/panels/SpectrumLegend.tsx` | STFT average spectrum, real-time FFT rendering, comparison-channel overlay |
-| Spectrogram | `src/audio/spectrogram.ts`, `src/panels/Spectrogram.tsx` | STFT time-frequency matrix, dB normalization, magma palette, log-frequency canvas rendering |
-| Stereo field | `src/audio/soundField.ts`, `src/panels/Goniometer.tsx`, `src/panels/SoundField.tsx` | Mid-side scatter view and four-band L/R RMS spatial visualization |
-| Loudness metrics | `src/audio/lufs.ts`, `src/audio/stats.ts`, `src/panels/StatBar.tsx`, `src/panels/LufsDisplay.tsx` | EBU R128-style LUFS, true peak approximation, LRA, RMS, crest factor, clip ratio, correlation, width, kurtosis |
-| Runtime integration | `src/audio/engine.ts`, `src/tabs/Analyze/index.tsx` | AudioContext pipeline, pre-computation orchestration, panel layout and interaction wiring |
-| UI dependencies | `src/store/index.ts`, `src/theme/index.ts`, `src/theme/tokens.css`, `src/tabs/Analyze/Analyze.module.css` | Shared view state, theme tokens, and panel styling required by the visualization components |
+| FFT and DSP primitives | `src/audio/fft.ts`, `src/audio/dsp.ts` | Radix-2 FFT, Hann window, filter helpers |
+| Waveform and color analysis | `src/audio/coloredPeaks.ts`, `src/audio/stats.ts` | Peak extraction, RGB waveform coloring, loudness / dynamics stats |
+| Spectrum and spectrogram | `src/audio/avgSpectrum.ts`, `src/audio/spectrogram.ts`, `src/panels/Spectrum.tsx`, `src/panels/SpectrumLegend.tsx`, `src/panels/Spectrogram.tsx` | Real-time spectrum, full-track average spectrum, STFT heatmap rendering |
+| Stereo field | `src/audio/soundField.ts`, `src/panels/Goniometer.tsx`, `src/panels/SoundField.tsx` | Mid/Side scatter and four-band spatial visualization |
+| Loudness metrics | `src/audio/lufs.ts`, `src/panels/LufsDisplay.tsx`, `src/panels/StatBar.tsx` | LUFS, true peak, LRA, peak / RMS / crest / clip / correlation readouts |
+| Runtime orchestration | `src/audio/engine.ts`, `src/audio/useEngineState.ts`, `src/tabs/Analyze/index.tsx` | Web Audio pipeline, precomputation, panel wiring |
+| Track-side waveform utilities | `src/audio/trackEngine.ts`, `src/audio/useTrackState.ts`, `src/audio/wavEncoder.ts`, `src/panels/ScrollingWaveform.tsx`, `src/panels/TrackItem.tsx`, `src/panels/TrackList.tsx` | Recording waveform preview, track trimming, WAV export, multi-track visualization |
+| UI dependencies | `src/store/index.ts`, `src/theme/index.ts`, `src/theme/tokens.css`, `src/tabs/Analyze/Analyze.module.css`, `src/panels/ColorModeSwitch.tsx`, `src/panels/Spectrogram.module.css` | Shared state, theming, and panel support UI |
 
-## Important Entry Points
+## Important entry points
 
 - `computeColoredPeaks()` in `src/audio/coloredPeaks.ts`
 - `computeAverageSpectrum()` in `src/audio/avgSpectrum.ts`
@@ -43,11 +48,22 @@ It intentionally excludes unrelated app surfaces such as recording track managem
 - `computeStats()` in `src/audio/stats.ts`
 - `soundFieldAnalyser.process()` in `src/audio/soundField.ts`
 - `AudioEngine.loadFile()` in `src/audio/engine.ts`
+- `TrackEngine.startRecording()` / `addTrackFromBlob()` in `src/audio/trackEngine.ts`
+
+## Explicit exclusions
+
+This snapshot still does **not** mirror the full product source tree. It excludes:
+
+- Electron shell code in `electron/`
+- device routing / Windows mixer UI in `src/tabs/Devices/`
+- MV editor / exporter in `src/tabs/MV/`
+- generic app UI components in `src/components/`
+- packaging scripts, UV launcher code, and release assets
 
 ## Notes
 
 - This is a source snapshot, not a standalone npm package.
-- The implementation is written for the browser Web Audio API and React canvas panels.
-- The spectrogram implementation in this snapshot uses the current working-tree version: `fftSize = 2048` by default, 50% overlap, integer hop size, and bitmap width based on `spec.timeBins`.
-- True Peak is a simplified 4x linear interpolation approximation, not a professional sinc oversampling implementation.
+- The implementation targets browser Web Audio + React canvas rendering.
+- The snapshot is expected to track the current working tree and may evolve when the live analysis pipeline changes.
+- True Peak here is a simplified 4x linear-interpolation approximation, not a broadcast-grade oversampling implementation.
 - The code is released under the same MIT license as the repository.

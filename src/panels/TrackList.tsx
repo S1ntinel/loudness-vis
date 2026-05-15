@@ -1,10 +1,12 @@
 import { useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { trackEngine } from '../audio/trackEngine';
 import { useTrackState } from '../audio/useTrackState';
 import TrackItem from './TrackItem';
 import s from '../tabs/Record/Record.module.css';
 
 export default function TrackList() {
+  const { t } = useTranslation();
   const { tracks, playState, playMode, selectedCount } = useTrackState();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -16,15 +18,15 @@ export default function TrackList() {
   const isMultiPlaying = playMode === 'multi' && playState === 'playing';
   const isMultiPaused  = playMode === 'multi' && playState === 'paused';
   const multiBtnText =
-    isMultiPlaying ? '⏸ 暂停'
-    : isMultiPaused ? '▶ 继续'
-    : `▶ 播放选中${selectedCount > 0 ? ` (${selectedCount})` : ''}`;
+    isMultiPlaying ? t('record.pauseBtn')
+    : isMultiPaused ? t('record.resumeBtn')
+    : `${t('record.playSelectedSimple')}${selectedCount > 0 ? ` (${selectedCount})` : ''}`;
 
   return (
     <>
       <div className={s.listHeader}>
         <button className={s.uploadBtn} onClick={() => fileInputRef.current?.click()}>
-          + 上传音频
+          {t('record.uploadAudio')}
         </button>
         <input
           type="file" accept="audio/*" multiple hidden ref={fileInputRef}
@@ -36,13 +38,13 @@ export default function TrackList() {
         {tracks.length > 0 && (
           <>
             <button className={s.miniBtn} onClick={() => trackEngine.selectAll()} disabled={selectedCount === tracks.length}>
-              全选
+              {t('record.selectAll')}
             </button>
             <button className={s.miniBtn} onClick={() => trackEngine.invertSelection()} disabled={tracks.length === 0}>
-              反选
+              {t('record.invertSelect')}
             </button>
             <button className={s.miniBtn} onClick={() => trackEngine.clearSelection()} disabled={selectedCount === 0}>
-              清除
+              {t('record.clearSelect')}
             </button>
             <button
               className={`${s.playMultiBtn} ${isMultiPlaying ? s.playMultiActive : ''}`}
@@ -52,17 +54,17 @@ export default function TrackList() {
               {multiBtnText}
             </button>
             {(isMultiPlaying || isMultiPaused) && (
-              <button className={s.miniBtn} onClick={() => trackEngine.stopPlayback()}>■ 停止</button>
+              <button className={s.miniBtn} onClick={() => trackEngine.stopPlayback()}>{t('record.stopBtn')}</button>
             )}
           </>
         )}
       </div>
 
       {tracks.length === 0 ? (
-        <div className={s.recEmpty}>暂无轨道（用左侧按钮录制 / 用上方按钮上传音频）</div>
+        <div className={s.recEmpty}>{t('record.emptyTracks')}</div>
       ) : (
         <div className={s.recList}>
-          {tracks.map(t => <TrackItem key={t.id} track={t} />)}
+          {tracks.map(track => <TrackItem key={track.id} track={track} />)}
         </div>
       )}
     </>

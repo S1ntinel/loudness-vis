@@ -7,6 +7,8 @@ import { useUIStore } from '../store';
 export default function Waveform({ className }: { className?: string }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const dragRef = useRef({ active: false, wasPlaying: false });
+  const theme = useUIStore(s => s.theme);
+  const preset = useUIStore(s => s.preset);
 
   useEffect(() => {
     const canvas = canvasRef.current!;
@@ -69,9 +71,19 @@ export default function Waveform({ className }: { className?: string }) {
     canvas.addEventListener('wheel', onWheel, { passive: false });
     window.addEventListener('mousemove', onMouseMove);
     window.addEventListener('mouseup', onMouseUp);
+    const onVis = () => { isVisible = document.visibilityState === 'visible'; };
+    document.addEventListener('visibilitychange', onVis);
 
     let raf = 0;
+    let isVisible = true;
+    // 缓存 CSS 变量
+    let cssText3 = cssVar('--text-3', '#9aa3b3');
+    let cssAccent = cssVar('--accent', '#3b6db5');
+    let cssWaveUnplayed = cssVar('--wave-unplayed', '#bcc1cb');
+    let cssWaveGlow = cssVar('--wave-glow', 'rgba(59, 109, 181, 0.35)');
+    let cssText = cssVar('--text', '#3a4150');
     function draw() {
+      if (!isVisible) { raf = requestAnimationFrame(draw); return; }
       const w = canvas.clientWidth;
       const h = canvas.clientHeight;
       ctx2d.clearRect(0, 0, w, h);
@@ -80,12 +92,13 @@ export default function Waveform({ className }: { className?: string }) {
       const cPeaks = engine.coloredPeaks;
       const buf = engine.audioBuffer;
       if (!peaks || !buf) {
-        ctx2d.fillStyle = cssVar('--text-3', '#9aa3b3');
+        ctx2d.fillStyle = cssText3;
         ctx2d.font = '14px MiSans, "Microsoft YaHei", sans-serif';
         ctx2d.fillText('载入音频后显示整首歌的波形（Shift+滚轮缩放，双击重置）', 12, h / 2);
         raf = requestAnimationFrame(draw);
         return;
       }
+      const peakData = peaks;
 
       const { viewStart, viewEnd } = useUIStore.getState();
       const viewRange = viewEnd - viewStart;
@@ -102,30 +115,49 @@ export default function Waveform({ className }: { className?: string }) {
 
       const useColored = engine.colorMode !== 'mono' && cPeaks;
       const colors = engine.colorMode === 'multiband' ? cPeaks?.colorsRgb : cPeaks?.colorsCentroid;
-      const playedColor   = '#3b6db5';
-      const unplayedColor = cssVar('--wave-unplayed', '#bcc1cb');
+      const playedColor   = cssAccent;
+      const unplayedColor = cssWaveUnplayed;
+      const isDark = document.body.classList.contains('dark');
 
-      for (let px = 0; px < w; px++) {
-        // 当前像素对应的全曲 ratio → bin index
-        const globalR = viewStart + (px / w) * viewRange;
-        const i = Math.min(N - 1, Math.max(0, Math.floor(globalR * N)));
-        const mn = peaks.min[i];
-        const mx = peaks.max[i];
-        const y1 = cy - mx * half;
-        const y2 = cy - mn * half;
-        if (useColored && colors) {
-          ctx2d.strokeStyle = colors[i];
-          ctx2d.globalAlpha = (playHeadVisible && px <= playX) || (progress >= viewEnd) ? 1 : 0.40;
-          if (!playHeadVisible && progress < viewStart) ctx2d.globalAlpha = 0.40;
-        } else {
-          const beforePlay = playHeadVisible ? px <= playX : progress >= viewEnd;
-          ctx2d.strokeStyle = beforePlay ? playedColor : unplayedColor;
-          ctx2d.globalAlpha = 1;
+      function appendColumns(fromPx: number, toPx: number) {
+        const start = Math.max(0, Math.floor(fromPx));
+        const end = Math.min(w, Math.ceil(toPx));
+        for (let px = start; px < end; px++) {
+          const globalR = viewStart + (px / w) * viewRange;
+          const i = Math.min(N - 1, Math.max(0, Math.floor(globalR * N)));
+          const x = px + 0.5;
+          ctx2d.moveTo(x, cy - peakData.max[i] * half);
+          ctx2d.lineTo(x, cy - peakData.min[i] * half);
         }
-        ctx2d.beginPath();
-        ctx2d.moveTo(px + 0.5, y1);
-        ctx2d.lineTo(px + 0.5, y2);
-        ctx2d.stroke();
+      }
+
+      // 主波形：单色模式按已播放/未播放分两条路径；彩色模式用 fillRect，步进 2 以减半 draw call。
+      if (useColored && colors) {
+        const step = w > 1200 ? 2 : 1; // 宽画布跳过奇数列，视觉损失极小但性能翻倍
+        for (let px = 0; px < w; px += step) {
+          const globalR = viewStart + (px / w) * viewRange;
+          const i = Math.min(N - 1, Math.max(0, Math.floor(globalR * N)));
+          const y1 = cy - peakData.max[i] * half;
+          const y2 = cy - peakData.min[i] * half;
+          const alpha = (playHeadVisible && px <= playX) || progress >= viewEnd ? 1 : 0.40;
+          ctx2d.globalAlpha = !playHeadVisible && progress < viewStart ? 0.40 : alpha;
+          ctx2d.fillStyle = colors[i];
+          ctx2d.fillRect(px, Math.min(y1, y2), step, Math.max(1, Math.abs(y2 - y1)));
+        }
+      } else {
+        const playedEnd = playHeadVisible ? Math.min(w, playX) : progress >= viewEnd ? w : 0;
+        if (playedEnd > 0) {
+          ctx2d.strokeStyle = playedColor;
+          ctx2d.beginPath();
+          appendColumns(0, playedEnd);
+          ctx2d.stroke();
+        }
+        if (playedEnd < w) {
+          ctx2d.strokeStyle = unplayedColor;
+          ctx2d.beginPath();
+          appendColumns(playedEnd, w);
+          ctx2d.stroke();
+        }
       }
       ctx2d.globalAlpha = 1;
 
@@ -175,7 +207,7 @@ export default function Waveform({ className }: { className?: string }) {
       const cur = dur * progress;
       const tStart = dur * viewStart;
       const tEnd   = dur * viewEnd;
-      ctx2d.fillStyle = cssVar('--text', '#3a4150');
+      ctx2d.fillStyle = cssText;
       ctx2d.font = '14px MiSans, "Microsoft YaHei", sans-serif';
       const isZoomed = viewRange < 0.999;
       const leftStr  = isZoomed ? `${formatTime(tStart)} · ${formatTime(cur)}` : formatTime(cur);
@@ -197,8 +229,9 @@ export default function Waveform({ className }: { className?: string }) {
       canvas.removeEventListener('wheel', onWheel);
       window.removeEventListener('mousemove', onMouseMove);
       window.removeEventListener('mouseup', onMouseUp);
+      document.removeEventListener('visibilitychange', onVis);
     };
-  }, []);
+  }, [theme, preset]);
 
   return <canvas ref={canvasRef} className={className} />;
 }

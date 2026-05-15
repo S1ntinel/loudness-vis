@@ -5,9 +5,79 @@
     <link rel="icon" href="data:," />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>响度战争可视化器 — Loudness War Visualizer</title>
+    <style>
+      :root {
+        color-scheme: dark;
+        font-family: "Segoe UI", system-ui, sans-serif;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        background: #0d1117;
+        color: #e6edf3;
+      }
+
+      #startup-shell {
+        min-height: 100vh;
+        display: grid;
+        place-items: center;
+        background:
+          radial-gradient(circle at top, rgba(56, 139, 253, 0.18), transparent 34%),
+          #0d1117;
+      }
+
+      .startup-card {
+        display: grid;
+        gap: 14px;
+        justify-items: center;
+        padding: 24px 28px;
+      }
+
+      .startup-title {
+        font-size: 18px;
+        letter-spacing: 0.08em;
+      }
+
+      .startup-subtitle {
+        font-size: 12px;
+        color: #8b949e;
+      }
+
+      .startup-bar {
+        width: min(240px, 42vw);
+        height: 3px;
+        overflow: hidden;
+        border-radius: 999px;
+        background: rgba(240, 246, 252, 0.08);
+      }
+
+      .startup-bar::after {
+        content: "";
+        display: block;
+        width: 42%;
+        height: 100%;
+        border-radius: inherit;
+        background: linear-gradient(90deg, #1f6feb, #58a6ff);
+        animation: startup-slide 1s ease-in-out infinite;
+      }
+
+      @keyframes startup-slide {
+        0% { transform: translateX(-120%); }
+        100% { transform: translateX(340%); }
+      }
+    </style>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <div id="startup-shell" aria-hidden="true">
+        <div class="startup-card">
+          <div class="startup-title">LoudnessVis</div>
+          <div class="startup-bar"></div>
+          <div class="startup-subtitle">Launching audio workspace…</div>
+        </div>
+      </div>
+    </div>
     <script type="module">
       const normalizedPath = decodeURIComponent(location.pathname).replace(/\\/g, '/');
       const isFileEntry = location.protocol === 'file:';

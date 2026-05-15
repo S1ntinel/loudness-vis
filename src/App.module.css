@@ -2,119 +2,200 @@
   display: flex;
   flex-direction: column;
   height: 100%;
+  background-color: var(--hw-cream);
+  background-image: var(--hw-grain);
+  padding: 12px;
+  position: relative;
+  box-shadow: inset 0 0 100px rgba(0,0,0,0.05);
 }
 
-/* ============ 顶部栏 ============ */
+/* ============ 硬件顶部控制条 ============ */
 .topbar {
-  height: 56px;
-  padding: 0 22px;
-  background: var(--bar-bg);
-  backdrop-filter: blur(24px) saturate(1.5);
-  -webkit-backdrop-filter: blur(24px) saturate(1.5);
-  border-bottom: 1px solid var(--bar-bottom);
-  box-shadow: 0 1px 0 var(--divider);
+  height: 72px;
+  padding: 0 20px;
+  background: var(--hw-cream);
+  border: 1px solid var(--hw-metal);
+  border-bottom-width: 3px;
+  border-radius: 8px 8px 0 0;
   display: flex;
-  gap: 12px;
+  gap: 16px;
   align-items: center;
+  position: relative;
+  z-index: 10;
+  box-shadow: var(--hw-outer-shadow);
+  margin-bottom: 2px;
+}
+
+.topbar::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: -1px;
+  right: -1px;
+  height: 2px;
+  background: rgba(0,0,0,0.15);
 }
 
 .topbar .btn {
-  padding: 7px 14px;
-  background: var(--btn-bg);
-  border: 1px solid var(--btn-border);
-  color: var(--text);
+  height: 34px;
+  padding: 0 14px;
+  background: var(--vfd-orange);
+  border: 1px solid var(--hw-ink);
+  border-bottom-width: 3px;
+  color: #fff;
+  font-family: 'MiSans', sans-serif;
+  font-weight: 700;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
   cursor: pointer;
-  border-radius: var(--radius-btn);
-  font: inherit;
-  user-select: none;
-  transition: background 0.15s, border-color 0.15s;
+  border-radius: 3px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.08s;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.2);
 }
-.topbar .btn:hover { background: var(--btn-bg-hover); }
-.topbar .btn:active { background: var(--btn-bg-active); }
-.topbar .btn:disabled { opacity: 0.5; cursor: not-allowed; }
-.topbar .btnPinned {
-  background: rgba(232, 166, 74, 0.18);
-  border-color: rgba(232, 166, 74, 0.65);
-  color: #c47a1a;
+
+.topbar .btn:active {
+  transform: translateY(2px);
+  border-bottom-width: 1px;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
 }
-.topbar .btnPinned:hover {
-  background: rgba(232, 166, 74, 0.28);
-  border-color: rgba(232, 166, 74, 0.85);
+
+.topbar .btn:disabled {
+  background: var(--hw-metal);
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .topbar .tabBtn {
-  padding: 7px 14px;
-  background: transparent;
-  border: 1px solid transparent;
-  color: var(--text-2);
+  height: 38px;
+  padding: 0 16px;
+  background: var(--hw-white);
+  border: 1px solid var(--hw-metal);
+  border-bottom: none;
+  border-radius: 5px 5px 0 0;
+  color: var(--hw-ink);
+  font-weight: 700;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
   cursor: pointer;
-  border-radius: var(--radius-btn);
-  font: inherit;
-  user-select: none;
+  margin-top: auto;
+  transition: all 0.15s;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
-.topbar .tabBtn:hover { color: var(--text); }
+
+.topbar .tabBtn:hover { background: #fff; }
+
 .topbar .tabBtn.active {
-  color: #fff;
-  background: var(--tab-active);
-  border-color: var(--tab-active);
+  height: 44px;
+  background: var(--hw-black);
+  color: var(--vfd-cyan);
+  border-color: var(--hw-black);
+  box-shadow: 0 -4px 10px rgba(0,0,0,0.2);
+  z-index: 2;
+  text-shadow: 0 0 8px var(--vfd-cyan);
 }
 
 .topbar .fileName {
-  color: var(--text-2);
   flex: 1;
+  font-family: monospace;
+  background: var(--hw-black);
+  color: var(--vfd-green);
+  padding: 6px 12px;
+  border-radius: 3px;
+  font-size: 12px;
+  border: 1px solid var(--hw-metal);
+  box-shadow: inset 0 2px 6px rgba(0,0,0,0.6);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  margin-left: 6px;
+  text-shadow: 0 0 8px var(--vfd-green);
+  animation: vfd-flicker 12s infinite;
 }
 
-.topbar .labelText { color: var(--text-2); }
-.topbar input[type='range'] {
-  width: 110px;
-  vertical-align: middle;
-  accent-color: var(--accent, #3b6db5);
-}
-.topbar .gainValue {
-  font-size: 11px;
-  color: var(--text-2);
-  font-variant-numeric: tabular-nums;
-  min-width: 44px;
-  text-align: right;
+.topbar .presetWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--hw-metal);
+  padding: 3px;
+  border-radius: 4px;
+  border: 1px solid var(--hw-ink);
 }
 
 .topbar .divider {
   width: 1px;
-  height: 22px;
-  background: var(--divider);
-  margin: 0 4px;
+  height: 30px;
+  background: var(--hw-metal);
+  box-shadow: 1px 0 0 rgba(255,255,255,0.3);
 }
 
-/* ============ 拖入遮罩 ============ */
+.topbar .labelText {
+  font-size: 9px;
+  color: var(--hw-ink);
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.topbar .gainValue {
+  font-family: monospace;
+  font-size: 13px;
+  color: var(--vfd-orange);
+  background: var(--hw-black);
+  padding: 2px 6px;
+  border-radius: 2px;
+  min-width: 55px;
+  text-align: right;
+  border: 1px solid var(--hw-metal);
+  text-shadow: 0 0 5px var(--vfd-orange);
+}
+
+.gainSlider {
+  appearance: none;
+  width: 100px;
+  height: 5px;
+  background: var(--hw-black);
+  border-radius: 2px;
+  border: 1px solid var(--hw-metal);
+}
+
+.gainSlider::-webkit-slider-thumb {
+  appearance: none;
+  width: 14px;
+  height: 20px;
+  background: var(--hw-metal);
+  border: 1px solid var(--hw-ink);
+  border-radius: 1px;
+  cursor: pointer;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.4);
+}
+
 .dropzone {
   position: fixed;
-  inset: 0;
-  background: var(--panel-bg);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  inset: 12px;
+  background: rgba(232, 226, 214, 0.92);
+  border: 3px dashed var(--vfd-orange);
   display: none;
   align-items: center;
   justify-content: center;
-  font-size: 28px;
-  font-weight: 500;
-  color: #3b6db5;
-  pointer-events: none;
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--hw-ink);
   z-index: 1000;
-  outline: 3px dashed #3b6db5;
-  outline-offset: -16px;
+  border-radius: 10px;
 }
 .dropzone.show { display: flex; }
 
-/* ============ 占位 Tab ============ */
-.placeholder {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--text-3);
-  font-size: 18px;
+@keyframes vfd-flicker {
+  0%, 100% { opacity: 1; }
+  45% { opacity: 0.98; }
+  50% { opacity: 0.97; }
+  55% { opacity: 0.99; }
 }

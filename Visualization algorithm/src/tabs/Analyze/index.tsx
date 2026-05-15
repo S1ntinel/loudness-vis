@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import StatBar from '../../panels/StatBar';
 import Goniometer from '../../panels/Goniometer';
 import Spectrum from '../../panels/Spectrum';
@@ -19,6 +20,7 @@ const SF_KEY = 'lvSoundFieldMode';
 type SoundFieldMode = 'goniometer' | 'sphere';
 
 export default function Analyze() {
+  const { t } = useTranslation();
   const layoutRef = useRef<HTMLDivElement>(null);
   const draggingRef = useRef(false);
 
@@ -42,10 +44,14 @@ export default function Analyze() {
 
   useEffect(() => {
     try { localStorage.setItem(STORAGE_KEY, String(waveRatio)); } catch { /* noop */ }
+    // 同步到全局变量供预设系统读取
+    window.__lvWaveRatio = waveRatio;
   }, [waveRatio]);
 
   useEffect(() => {
     try { localStorage.setItem(SF_KEY, sfMode); } catch { /* noop */ }
+    // 同步到全局变量供预设系统读取
+    window.__lvSfMode = sfMode;
   }, [sfMode]);
 
   // 全图模式按 Esc 退出
@@ -57,6 +63,17 @@ export default function Analyze() {
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
   }, [specFull]);
+
+  // 监听全局变量变化（预设加载时会写入 window.__lvWaveRatio / __lvSfMode）
+  useEffect(() => {
+    const id = setInterval(() => {
+      const wr = window.__lvWaveRatio;
+      const sf = window.__lvSfMode as SoundFieldMode | undefined;
+      if (wr !== undefined && wr !== waveRatio) setWaveRatio(wr);
+      if (sf !== undefined && sf !== sfMode) setSfMode(sf);
+    }, 100);
+    return () => clearInterval(id);
+  }, [waveRatio, sfMode]);
 
   // 拖拽分隔条改变 waveRatio
   function onSplitterDown(e: React.MouseEvent) {
@@ -108,11 +125,11 @@ export default function Analyze() {
   return (
     <>
       <StatBar />
-      <div ref={layoutRef} className={s.layout} style={{ gridTemplateRows }}>
+      <div ref={layoutRef} className={s.layout} style={{ gridTemplateRows, position: 'relative' }}>
         <div className={`${s.panel} ${s.goniometer}`}>
           <h3 className={s.panelTitle}>
             <span className={s.triangle}>▶</span>
-            {sfMode === 'goniometer' ? '声场指示器' : '声场分析球'}
+            {sfMode === 'goniometer' ? t('analyze.goniometer.title') : t('analyze.goniometer.title')}
             <span className={s.panelTitleEn}>
               {sfMode === 'goniometer' ? 'Goniometer · Mid / Side' : 'Sound Field · 4-band Spatial'}
             </span>
@@ -121,13 +138,13 @@ export default function Analyze() {
               <button
                 className={`${s.modeBtn} ${sfMode === 'goniometer' ? s.modeBtnActive : ''}`}
                 onClick={() => setSfMode('goniometer')}
-                title="Lissajous 利萨如散点（Mid/Side 关系）"
-              >散点</button>
+                title={t('analyze.goniometer.scatterDesc')}
+              >{t('analyze.goniometer.scatter')}</button>
               <button
                 className={`${s.modeBtn} ${sfMode === 'sphere' ? s.modeBtnActive : ''}`}
                 onClick={() => setSfMode('sphere')}
-                title="按频段的空间定位球（俯视图）"
-              >球面</button>
+                title={t('analyze.goniometer.sphereDesc')}
+              >{t('analyze.goniometer.sphere')}</button>
             </div>
           </h3>
           {sfMode === 'goniometer'
@@ -137,8 +154,8 @@ export default function Analyze() {
         <div className={`${s.panel} ${s.spectrum}`}>
           <h3 className={s.panelTitle}>
             <span className={s.triangle}>▶</span>
-            实时频响曲线
-            <span className={s.panelTitleEn}>Spectrum · FFT (log freq, dBFS)</span>
+            {t('analyze.spectrum.title')}
+            <span className={s.panelTitleEn}>{t('analyze.spectrum.subtitle')}</span>
             <span className={s.panelTitleSpacer} />
             <SpectrumLegend />
           </h3>
@@ -147,10 +164,9 @@ export default function Analyze() {
         <div className={`${s.panel} ${s.waveform}`}>
           <h3 className={s.panelTitle}>
             <span className={s.triangle}>▶</span>
-            波形 · 实时滚动
-            <span className={s.panelTitleEn}>Waveform · click / drag to seek</span>
+            {t('analyze.waveform.title')}
+            <span className={s.panelTitleEn}>{t('analyze.waveform.subtitle')}</span>
             <span className={s.panelTitleSpacer} />
-            <ColorModeSwitch />
             <LufsDisplay />
           </h3>
           <Waveform className={`${s.panelCanvas} ${s.panelCanvasGrab}`} />
@@ -158,20 +174,20 @@ export default function Analyze() {
         <div
           className={`${s.splitter} ${dragging ? s.splitterDragging : ''}`}
           onMouseDown={onSplitterDown}
-          title="拖动调整两面板高度比例（双击重置）"
+          title={t('analyze.waveform.splitterTitle')}
           onDoubleClick={() => setWaveRatio(0.4)}
         />
         <div className={`${s.panel} ${s.spectrogram} ${specFull ? s.fullscreen : ''}`}>
           <h3 className={s.panelTitle}>
             <span className={s.triangle}>▶</span>
-            频谱图
-            <span className={s.panelTitleEn}>Spectrogram · time × log-freq · magma</span>
+            {t('analyze.spectrogram.title')}
+            <span className={s.panelTitleEn}>{t('analyze.spectrogram.subtitle')}</span>
             <span className={s.panelTitleSpacer} />
             <button
               className={s.modeBtn}
               onClick={() => setSpecFull(v => !v)}
-              title={specFull ? '退出全图（Esc 也可）' : '让频谱图占满整个分析区域'}
-            >{specFull ? '⛶ 还原' : '⛶ 全图'}</button>
+              title={t('analyze.spectrogram.fullViewDesc')}
+            >{specFull ? '⛶ ' + t('common.close') : t('analyze.spectrogram.fullView')}</button>
           </h3>
           <SpectrogramPanel className={`${s.panelCanvas} ${s.panelCanvasCrosshair}`} />
         </div>

@@ -2,8 +2,11 @@ node_modules/
 dist/
 release/
 lite/
+.sisyphus/
+FoRk/
 *.7z
 *.zip
+*.exe
 *.log
 *.tmp
 Thumbs.db
@@ -25,3 +28,4 @@ UV/src/*.egg-info/
 UV/src/loudness_vis_uv/__pycache__/
 UV/音频参考/
 lite/音频参考/
+音频参考/

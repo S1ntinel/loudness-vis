@@ -1,0 +1,75 @@
+.panel {
+  background: var(--hw-cream);
+  background-image: var(--hw-grain);
+  border: 2px solid var(--hw-metal);
+  border-radius: 4px;
+  padding: 12px;
+  box-shadow: var(--hw-outer-shadow);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.title {
+  margin: 0 0 4px;
+  font-size: 11px;
+  font-weight: 900;
+  color: var(--hw-ink);
+  text-transform: uppercase;
+  border-bottom: 2px solid var(--hw-metal);
+  padding-bottom: 4px;
+}
+
+.groupTitle {
+  font-size: 9px;
+  font-weight: 900;
+  color: var(--text-3);
+  text-transform: uppercase;
+  margin: 4px 0;
+}
+
+.field, .sliderField, .toggleRow {
+  background: rgba(0,0,0,0.03);
+  padding: 6px 10px;
+  border-radius: 2px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.field span, .sliderField span {
+  font-size: 9px;
+  font-weight: 800;
+  color: var(--hw-ink);
+  min-width: 50px;
+  white-space: nowrap;
+}
+
+.select, .input {
+  background: var(--hw-white);
+  border: 1px solid var(--hw-metal);
+  padding: 2px 6px;
+  font-size: 10px;
+  border-radius: 2px;
+  flex: 1;
+  min-width: 0;
+}
+
+.slider { appearance: none; height: 3px; background: var(--hw-black); flex: 1; min-width: 50px; }
+.slider::-webkit-slider-thumb { appearance: none; width: 10px; height: 16px; background: var(--hw-metal); border: 1px solid var(--hw-ink); }
+
+.button {
+  background: var(--hw-white);
+  border: 1px solid var(--hw-metal);
+  border-bottom-width: 3px;
+  padding: 4px 8px;
+  font-size: 9px;
+  font-weight: 800;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+.button:active { transform: translateY(1px); border-bottom-width: 1px; }
+
+.colorField { font-size: 8px; font-weight: 800; color: var(--text-3); display: flex; align-items: center; gap: 4px; }
+.colorField input[type='color'] { height: 24px; width: 40px; border: 1px solid var(--hw-metal); background: var(--hw-black); padding: 0; cursor: pointer; }

@@ -32,8 +32,11 @@ const COMPARE_PALETTE = [
 ];
 
 type AnalyzerBuffer = Float32Array<ArrayBuffer>;
+type SinkSelectableAudioContext = AudioContext & {
+  setSinkId?: (sinkId: string) => Promise<void>;
+};
 
-class AudioEngine {
+export class AudioEngine {
   ctx: AudioContext;
   splitter: ChannelSplitterNode;
   lAna: AnalyserNode;
@@ -65,7 +68,8 @@ class AudioEngine {
   private listeners: Set<() => void> = new Set();
 
   constructor() {
-    const Ctor = (window.AudioContext || (window as any).webkitAudioContext) as typeof AudioContext;
+    const Ctor = window.AudioContext ?? window.webkitAudioContext;
+    if (!Ctor) throw new Error('当前环境不支持 AudioContext');
     this.ctx = new Ctor();
 
     this.splitter = this.ctx.createChannelSplitter(2);
@@ -77,7 +81,7 @@ class AudioEngine {
     this.lAna.fftSize = 2048;
     this.rAna.fftSize = 2048;
     this.specAna.fftSize = 4096;
-    this.specAna.smoothingTimeConstant = 0.7;
+    this.specAna.smoothingTimeConstant = 0.4;
     this.gainNode.gain.value = 0.6;
 
     this.splitter.connect(this.lAna, 0);
@@ -114,14 +118,14 @@ class AudioEngine {
       this.startInternal();
       this.notify();
       return { ok: true };
-    } catch (e: any) {
+    } catch (e: unknown) {
       this.audioBuffer = null;
       this.coloredPeaks = null;
       this.waveformPeaks = null;
       this.lufsResult = null;
       this.spectrogram = null;
       this.notify();
-      return { ok: false, error: e?.message || String(e) };
+      return { ok: false, error: e instanceof Error ? e.message : String(e) };
     }
   }
 
@@ -295,6 +299,18 @@ class AudioEngine {
     this.gainNode.gain.value = v;
   }
 
+  setGain(gainDb: number): void {
+    const gainLinear = Math.pow(10, gainDb / 20);
+    this.gainNode.gain.value = gainLinear;
+  }
+
+  async setOutputDevice(deviceId: string): Promise<boolean> {
+    const sinkContext = this.ctx as SinkSelectableAudioContext;
+    if (!sinkContext.setSinkId) return deviceId === 'default';
+    await sinkContext.setSinkId(deviceId);
+    return true;
+  }
+
   /** 当前播放进度 0..1（即使暂停也能反映 pauseOffset）*/
   getProgress(): number {
     if (!this.audioBuffer) return 0;
@@ -314,5 +330,5 @@ export const engine = new AudioEngine();
 
 // dev 期暴露给 console，便于调试
 if (import.meta.env?.DEV) {
-  (window as any).__engine = engine;
+  window.__engine = engine;
 }
