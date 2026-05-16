@@ -15,17 +15,21 @@
 
 ## 界面截图
 
-分析面板：
+1.0 分析面板（已载入音频）：
 
-![LoudnessVis 分析面板](./assets/screenshots/analysis-panel.png)
+![LoudnessVis 1.0 分析面板](./assets/screenshots/analysis-active-1.0.png)
 
 录音与多轨编辑：
 
-![LoudnessVis 录音与多轨编辑](./assets/screenshots/record-tracks.png)
+![LoudnessVis 1.0 录音与多轨编辑](./assets/screenshots/record-tracks-1.0.png)
 
-上传目标弹窗：
+MV 可视化编辑与导出：
 
-![LoudnessVis 上传目标弹窗](./assets/screenshots/upload-target-modal.png)
+![LoudnessVis 1.0 MV 可视化编辑](./assets/screenshots/mv-editor-1.0.png)
+
+分析面板（未载入音频）：
+
+![LoudnessVis 1.0 分析面板空状态](./assets/screenshots/analysis-empty-1.0.png)
 
 ## 这是什么
 

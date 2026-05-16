@@ -15,17 +15,21 @@ Click the preview to open the full MP4 demo video.
 
 ## Screenshots
 
-Analysis dashboard:
+1.0 analysis dashboard with loaded audio:
 
-![LoudnessVis analysis dashboard](./assets/screenshots/analysis-panel.png)
+![LoudnessVis 1.0 analysis dashboard](./assets/screenshots/analysis-active-1.0.png)
 
 Recording and multi-track editor:
 
-![LoudnessVis recording and multi-track editor](./assets/screenshots/record-tracks.png)
+![LoudnessVis 1.0 recording and multi-track editor](./assets/screenshots/record-tracks-1.0.png)
 
-Upload target modal:
+MV visual editor and export panel:
 
-![LoudnessVis upload target modal](./assets/screenshots/upload-target-modal.png)
+![LoudnessVis 1.0 MV visual editor](./assets/screenshots/mv-editor-1.0.png)
+
+Analysis dashboard before loading audio:
+
+![LoudnessVis 1.0 analysis empty state](./assets/screenshots/analysis-empty-1.0.png)
 
 ## Overview
 
