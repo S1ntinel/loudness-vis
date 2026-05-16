@@ -39,7 +39,7 @@ function renderReadme() {
 
 ## 中文说明
 
-这是 LoudnessVis 的 Lite 分发目录，使用保留下来的 \`lite.html\` 单文件页面作为演示版。
+这是 LoudnessVis 的 Lite 分发目录，使用保留下来的 \`lite.html\` 单文件页面作为轻量版 release 资产。
 
 适用场景：
 
@@ -66,7 +66,7 @@ function renderReadme() {
 
 - 优先使用 Edge 或 Chrome
 - 从这个版本开始，Release 中统一把这份单文件页面标为 Lite HTML；\`legacy.html\` 仅保留兼容别名
-- Lite 版只保留 Lite HTML demo，不包含 React 主界面、Electron 设备能力或 UV 启动器
+- Lite 版只保留 Lite HTML 单文件页面，不包含 React 主界面、Electron 设备能力或 UV 启动器
 - 如果浏览器阻止本地音频访问，请改用“选择文件”按钮手动载入音频
 
 ## English
@@ -75,7 +75,7 @@ This folder contains the Lite distribution of LoudnessVis, based on the preserve
 
 Use this bundle when you need:
 
-- a shareable HTML-only demo
+- a shareable HTML-only Lite release
 - no dependency on Node.js, uv, or Electron
 - a quick browser-based preview of the audio visualization tool
 
@@ -84,7 +84,7 @@ Folder contents:
 - \`index.html\`: default entry point
 - \`lite.html\`: primary Lite HTML file
 - \`legacy.html\`: compatibility alias with the same content as \`lite.html\`
-- \`fonts/\`: local font assets required by the Lite demo
+- \`fonts/\`: local font assets required by the Lite page
 - \`start-lite.cmd\`: one-click Windows launcher
 - \`start-lite.ps1\`: PowerShell launcher
 
@@ -98,7 +98,7 @@ Notes:
 
 - Edge or Chrome is recommended
 - Starting with this release line, the standalone page is labeled as Lite HTML in release notes; \`legacy.html\` remains as a compatibility alias
-- The Lite bundle only includes the Lite HTML demo
+- The Lite bundle only includes the Lite HTML single-file page
 - It does not include the React app, Electron device features, or the UV launcher
 `;
 }

@@ -1,18 +1,18 @@
-# LoudnessVis UV Demo / LoudnessVis UV Demo Launcher
+# LoudnessVis UV Preview Launcher
 
 ## 中文说明
 
 ### 简介
 
-`loudness-vis-demo` 是当前 LoudnessVis Web Demo 的本地启动包。
+`loudness-vis-demo` 是 LoudnessVis Web 版本的本地预览启动包。入口名称保留 `demo` 是为了兼容已经发布的启动脚本和 wheel 包。
 
 它包含两部分内容：
 
-- React 构建版 demo
+- React 构建版预览页面
 - 保留的 `lite.html` 单文件 Lite HTML
 
-这个 UV 包的目标是方便演示、测试和内部分享。
-它不是未来 Electron 设备能力的正式分发渠道。
+这个 UV 包的目标是方便本地运行、分发检查和轻量分享。
+它只覆盖 Web / Lite 预览资产；需要设备路由、系统音量控制等桌面能力时，请使用 Electron release。
 
 ### 目录说明
 
@@ -114,7 +114,7 @@ uv tool run --from .\loudness_vis_demo-0.2.0-py3-none-any.whl loudness-vis-demo
 
 ### 分发建议
 
-面向 demo 测试分发时，建议直接发送 `UV\dist` 目录中的以下文件：
+面向本地预览分发时，建议直接发送 `UV\dist` 目录中的以下文件：
 
 - `loudness_vis_demo-0.2.0-py3-none-any.whl`
 - `loudness_vis_demo-0.2.0.tar.gz`
@@ -140,15 +140,15 @@ start-demo.cmd
 
 ### Overview
 
-`loudness-vis-demo` is a local launcher package for the current LoudnessVis Web demos.
+`loudness-vis-demo` is a local preview launcher for the LoudnessVis Web build. The entry-point name keeps `demo` for compatibility with already published scripts and wheels.
 
 It contains:
 
-- the built React demo
+- the built React preview page
 - the retained single-file `lite.html` Lite HTML
 
-This UV package is intended for demos, testing, and internal sharing.
-It is not the long-term distribution path for the future Electron/device features.
+This UV package is intended for local runs, release verification, and lightweight sharing.
+It only covers the Web / Lite preview assets; use the Electron release for desktop device routing and system audio controls.
 
 ### Folder Layout
 
@@ -248,9 +248,9 @@ Or run directly from a wheel:
 uv tool run --from .\loudness_vis_demo-0.2.0-py3-none-any.whl loudness-vis-demo
 ```
 
-### Recommended Demo Distribution
+### Recommended Preview Distribution
 
-For demo sharing, send the following files from `UV\dist`:
+For local preview sharing, send the following files from `UV\dist`:
 
 - `loudness_vis_demo-0.2.0-py3-none-any.whl`
 - `loudness_vis_demo-0.2.0.tar.gz`

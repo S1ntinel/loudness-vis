@@ -10,7 +10,7 @@ from pathlib import Path
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
-        description="Serve the LoudnessVis built demos from a local HTTP server.",
+        description="Serve the LoudnessVis preview assets from a local HTTP server.",
     )
     parser.add_argument("--host", default="127.0.0.1", help="Host to bind. Default: 127.0.0.1")
     parser.add_argument("--port", type=int, default=4318, help="Port to bind. Default: 4318")
@@ -28,7 +28,7 @@ def main(argv: list[str] | None = None) -> int:
     server = ThreadingHTTPServer((args.host, args.port), handler_cls)
     url = f"http://{args.host}:{args.port}{page_path(args.page)}"
 
-    print(f"[uv] LoudnessVis demo server ready at http://{args.host}:{args.port}/")
+    print(f"[uv] LoudnessVis preview server ready at http://{args.host}:{args.port}/")
     print(f"[uv] React build : http://{args.host}:{args.port}/dist/index.html")
     print(f"[uv] Lite HTML  : http://{args.host}:{args.port}/lite.html")
     print(f"[uv] Legacy alias: http://{args.host}:{args.port}/legacy.html")

@@ -1,17 +1,17 @@
-# LoudnessVis — 响度战争可视化分析器
+# LoudnessVis — 音频可视化工作台
 
 [English](./README.md) | [简体中文](./README.zh-CN.md)
 
-一个开源的音频可视化工具，把母带响度、波形削顶、动态范围、频率能量和立体声声场搬上屏幕，让“听不出来”的东西可以被看见。
+一个开源的音频可视化工作台，覆盖音频分析、录音与多轨整理、设备路由、MV 画布和可视化导出。LoudnessVis 把母带响度、波形削顶、动态范围、频率能量和立体声声场搬上屏幕，让“听不出来”的东西可以被看见。
 
 仓库地址：<https://github.com/S1ntinel/loudness-vis>
 感谢：<https://linux.do/>
 
-## 演示视频
+## 预览视频
 
-[![LoudnessVis 演示预览](./assets/demo/loudnessvis-demo.gif)](./assets/demo/loudnessvis-demo.mp4)
+[![LoudnessVis 预览](./assets/demo/loudnessvis-demo.gif)](./assets/demo/loudnessvis-demo.mp4)
 
-点击上方预览图可打开完整 MP4 演示视频。
+点击上方预览图可打开完整 MP4 产品视频。
 
 ## 界面截图
 
@@ -33,7 +33,7 @@ MV 可视化编辑与导出：
 
 ## 这是什么
 
-LoudnessVis 是一个用 React + TypeScript 搭建的音频可视化项目，主要用于观察现代音乐母带中的响度战争特征：
+LoudnessVis 是一个用 React + TypeScript 搭建的音频可视化工作台。当前 `1.0` 版本已经不只是早期的响度战争主题原型，而是围绕四个主板块组织：分析、录音 / 多轨整理、设备控制和 MV 可视化导出。分析面板仍然适合观察现代音乐母带中的这些特征：
 
 - 波形是否被过度压缩或削顶
 - 动态范围是否塌缩
@@ -98,7 +98,7 @@ LoudnessVis 是一个用 React + TypeScript 搭建的音频可视化项目，主
 - 选择输入 / 输出设备，并查看输入电平变化。
 - 可切换当前应用的播放输出设备，或回退到系统默认输出。
 - Windows 桌面版下可查看系统音量合成器中的应用会话，并对会话执行静音 / 音量调节。
-- 适合在演示、采集和系统路由场景下快速检查设备状态。
+- 适合在展示、采集和系统路由场景下快速检查设备状态。
 
 ### 4. MV
 
@@ -111,7 +111,7 @@ LoudnessVis 是一个用 React + TypeScript 搭建的音频可视化项目，主
 
 - React Web 主界面，使用 Vite 开发和构建
 - 单文件 Lite HTML 独立版，一个 HTML 文件即可运行核心分析
-- UV 本地启动包，适合解压后本地演示
+- UV 本地预览启动包，适合解压后本地运行与分发检查
 - Electron 桌面版路线，当前已保留窗口置顶等桌面能力入口
 
 ## 可视化算法开源
@@ -160,7 +160,7 @@ npm run dev
 npm run build
 ```
 
-启动稳定的本地演示服务：
+启动稳定的本地预览服务：
 
 ```powershell
 npm run start:local
@@ -178,7 +178,7 @@ npm run start:lite
 npm run lite:build
 ```
 
-构建 UV 演示包：
+构建 UV 预览包：
 
 ```powershell
 npm run uv:build
@@ -197,14 +197,14 @@ npm run dev:electron
 | 路径 | 说明 |
 | --- | --- |
 | `src/` | React 应用、音频引擎、DSP 工具和可视化面板 |
-| `assets/demo/` | README 演示资源：首页 GIF 预览图与跳转 MP4 片段 |
+| `assets/demo/` | README 预览媒体：首页 GIF 预览图与跳转 MP4 片段 |
 | `assets/icons/` | 应用窗口与安装包图标 |
 | `assets/screenshots/` | README 产品截图：分析面板、录音流程和上传目标弹窗 |
 | `Visualization algorithm/` | 可视化面板算法和渲染逻辑的开源整理版 |
 | `public/` | Web 与打包流程共用的静态资源 |
 | `lite.html` | 保留下来的单文件 Lite HTML 源文件 |
 | `legacy.html` | 指向 Lite HTML 的兼容别名 |
-| `UV/` | 基于 Python / uv 的本地演示启动包 |
+| `UV/` | 基于 Python / uv 的本地预览启动包 |
 | `electron/` | Electron 桌面入口 |
 | `scripts/` | 构建、同步和打包脚本 |
 | `docs/` | 开发日志与发布说明 |
@@ -224,8 +224,8 @@ npm run dev:electron
 - [x] 声谱图和声场分析球
 - [x] 多轨频响叠加对比
 - [x] 可视化算法整理为 `Visualization algorithm/`
-- [ ] 系统设备音量控制，基于 Electron + Windows COM
-- [ ] MV 编辑器，基于 Canvas 和视频导出
+- [x] 系统设备音量控制，基于 Electron + Windows COM
+- [x] MV 编辑器，基于 Canvas 和视频导出
 
 ## 相关链接
 

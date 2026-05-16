@@ -1,6 +1,6 @@
 # Third-Party Notices
 
-This repository includes bundled third-party assets for demo and distribution convenience.
+This repository includes bundled third-party assets for preview and distribution convenience.
 
 ## Fonts
 
@@ -8,5 +8,4 @@ This repository includes bundled third-party assets for demo and distribution co
 - `lite/fonts/*`
 
 These font files are third-party assets and may be subject to their own upstream license terms.
-If you redistribute this repository or any packaged demo derived from it, review the original font license and replace the assets if your distribution policy requires it.
-
+If you redistribute this repository or any packaged release derived from it, review the original font license and replace the assets if your distribution policy requires it.

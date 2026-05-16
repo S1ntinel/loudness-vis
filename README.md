@@ -2,16 +2,16 @@
 
 [English](./README.md) | [简体中文](./README.zh-CN.md)
 
-Open-source audio visualization toolkit for inspecting loudness-war traits in mastered music. LoudnessVis turns waveform clipping, dynamic-range collapse, frequency imbalance, stereo-field behavior, and LUFS-style loudness metrics into visual panels that are easier to reason about.
+Open-source audio visualization workstation for analysis, recording, device routing, and MV-style visual export. LoudnessVis turns waveform clipping, dynamic range, frequency balance, stereo-field behavior, and LUFS-style loudness metrics into visual panels that are easier to reason about.
 
 Repository: <https://github.com/S1ntinel/loudness-vis>
 Thanks: [linux.do](https://linux.do/)
 
-## Demo
+## Preview
 
-[![LoudnessVis demo preview](./assets/demo/loudnessvis-demo.gif)](./assets/demo/loudnessvis-demo.mp4)
+[![LoudnessVis preview](./assets/demo/loudnessvis-demo.gif)](./assets/demo/loudnessvis-demo.mp4)
 
-Click the preview to open the full MP4 demo video.
+Click the preview to open the full MP4 product video.
 
 ## Screenshots
 
@@ -33,7 +33,7 @@ Analysis dashboard before loading audio:
 
 ## Overview
 
-LoudnessVis is built with React + TypeScript and focuses on visual analysis of mastering-side audio traits:
+LoudnessVis is built with React + TypeScript. In the `1.0` release it is no longer only a loudness-war prototype: it combines four production-facing sections, including audio analysis, recording / track editing, device control, and MV visual export. The analysis page still focuses on mastering-side audio traits:
 
 - whole-track waveform navigation with click / drag seeking
 - RGB band coloring and spectral-centroid hue mapping for low / mid / high energy distribution
@@ -129,10 +129,10 @@ This directory is a source snapshot of the current panel algorithms and renderin
 | Mode | Purpose | Entry |
 | --- | --- | --- |
 | React Web | Main Vite + React application | `npm run dev` |
-| Local demo server | Stable localhost launcher for testing | `npm run start:local` |
+| Local preview server | Stable localhost launcher for release verification | `npm run start:local` |
 | Lite HTML route | Serve the retained single-file Lite HTML on localhost | `npm run start:lite` |
 | Lite bundle | Shareable standalone HTML release | [`Releases`](https://github.com/S1ntinel/loudness-vis/releases) |
-| UV launcher | Distributable local web launcher for demos | [`UV/README.md`](./UV/README.md) |
+| UV launcher | Distributable local web preview launcher | [`UV/README.md`](./UV/README.md) |
 | Electron | Desktop/device integration path | `npm run dev:electron` / `npm run build:exe` |
 
 ## Tech Stack
@@ -164,7 +164,7 @@ Build the React app:
 npm run build
 ```
 
-Start a stable local demo server:
+Start a stable local preview server:
 
 ```powershell
 npm run start:local
@@ -182,7 +182,7 @@ Refresh the Lite bundle:
 npm run lite:build
 ```
 
-Build the UV demo package:
+Build the UV preview package:
 
 ```powershell
 npm run uv:build
@@ -201,14 +201,14 @@ Release assets are available from [GitHub Releases](https://github.com/S1ntinel/
 | Path | Purpose |
 | --- | --- |
 | `src/` | React app, audio engine, DSP helpers, and visualization panels |
-| `assets/demo/` | README demo assets: homepage GIF preview and linked MP4 clip |
+| `assets/demo/` | README preview media: homepage GIF preview and linked MP4 clip |
 | `assets/icons/` | Application and installer icons |
 | `assets/screenshots/` | README product screenshots for the analysis, recording, and upload flows |
 | `Visualization algorithm/` | Open-source snapshot of the visualization panel algorithms |
 | `public/` | Static assets shared by web and packaging flows |
 | `lite.html` | Retained single-file Lite HTML source |
 | `legacy.html` | Compatibility alias for the retained Lite HTML |
-| `UV/` | Python / uv launcher package for local demo delivery |
+| `UV/` | Python / uv launcher package for local preview delivery |
 | `electron/` | Electron entry points for desktop builds |
 | `scripts/` | Build, sync, and packaging scripts |
 | `docs/` | Development log and release notes |
@@ -228,8 +228,8 @@ Release assets are available from [GitHub Releases](https://github.com/S1ntinel/
 - [x] Spectrogram and sound-field sphere
 - [x] Multi-track frequency-response comparison
 - [x] Extract visualization algorithms into `Visualization algorithm/`
-- [ ] System device volume control through Electron + Windows COM
-- [ ] MV editor with Canvas and video export
+- [x] System device volume control through Electron + Windows COM
+- [x] MV editor with Canvas and video export
 
 ## Related Links
 
