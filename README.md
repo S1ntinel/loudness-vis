@@ -47,7 +47,7 @@ The repository is now in the `1.0` stable release stage and is distributed under
 
 ## Visualization Algorithm Source
 
-The visualization-panel algorithm implementation has been extracted into [`Visualization algorithm/`](./Visualization%20algorithm/) for easier review and reuse.
+The visualization-panel algorithm implementation is documented in [`Visualization algorithm/`](./Visualization%20algorithm/) for easier review and reuse. To avoid duplicated source snapshots, that directory now links back to the authoritative implementation in the main `src/` tree.
 
 | Area | Files |
 | --- | --- |
@@ -60,7 +60,7 @@ The visualization-panel algorithm implementation has been extracted into [`Visua
 | Canvas panels | `src/panels/` |
 | Analyze-page composition | `src/tabs/Analyze/` |
 
-This directory is a source snapshot of the current panel algorithms and rendering code, not a separate npm package.
+This directory is an algorithm index and source map, not a duplicated source tree or separate npm package.
 
 ## Features
 
@@ -204,10 +204,10 @@ Release assets are available from [GitHub Releases](https://github.com/S1ntinel/
 | `assets/demo/` | README preview media: homepage GIF preview and linked MP4 clip |
 | `assets/icons/` | Application and installer icons |
 | `assets/screenshots/` | README product screenshots for the analysis, recording, and upload flows |
-| `Visualization algorithm/` | Open-source snapshot of the visualization panel algorithms |
+| `Visualization algorithm/` | Algorithm index and source map for the visualization panel implementation |
 | `public/` | Static assets shared by web and packaging flows |
-| `lite.html` | Retained single-file Lite HTML source |
-| `legacy.html` | Compatibility alias for the retained Lite HTML |
+| `UV/src/loudness_vis_uv/assets/lite.html` | Retained single-file Lite HTML asset used by local preview and release packaging |
+| `UV/src/loudness_vis_uv/assets/legacy.html` | Compatibility alias for the retained Lite HTML asset |
 | `UV/` | Python / uv launcher package for local preview delivery |
 | `electron/` | Electron entry points for desktop builds |
 | `scripts/` | Build, sync, and packaging scripts |
@@ -215,8 +215,8 @@ Release assets are available from [GitHub Releases](https://github.com/S1ntinel/
 
 ## Release Notes
 
-- The retained single-file page is labeled as `lite.html` in Releases.
-- `legacy.html` remains as a compatibility alias for the older Lite naming.
+- The retained single-file Lite page is packaged from `UV/src/loudness_vis_uv/assets/lite.html` and labeled as `lite.html` in Releases.
+- `legacy.html` remains as a compatibility alias inside the UV / Lite packaging flow.
 - Lite and UV distributables are published through GitHub Releases instead of being stored in generated folders on the main branch.
 - Generated folders such as `node_modules/`, `dist/`, `lite/`, `UV/dist/`, archives, and local logs are intentionally excluded from version control.
 

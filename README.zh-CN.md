@@ -116,7 +116,7 @@ LoudnessVis 是一个用 React + TypeScript 搭建的音频可视化工作台。
 
 ## 可视化算法开源
 
-可视化面板相关的核心算法已单独整理到 [`Visualization algorithm/`](./Visualization%20algorithm/)：
+可视化面板相关的核心算法已单独整理到 [`Visualization algorithm/`](./Visualization%20algorithm/) 作为说明索引。为避免重复源码快照，该目录不再保存 `src/` 镜像，权威实现以主目录 `src/` 为准：
 
 | 模块 | 说明 |
 | --- | --- |
@@ -129,7 +129,7 @@ LoudnessVis 是一个用 React + TypeScript 搭建的音频可视化工作台。
 | `src/panels/` | Canvas 可视化面板实现 |
 | `src/tabs/Analyze/` | 分析面板布局和交互编排 |
 
-该目录是从当前实现中抽出的开源快照，便于单独审阅算法和可视化逻辑。
+该目录是算法索引和源码地图，便于单独审阅算法和可视化逻辑；它不是重复的源码树。
 
 ## 技术栈
 
@@ -200,10 +200,10 @@ npm run dev:electron
 | `assets/demo/` | README 预览媒体：首页 GIF 预览图与跳转 MP4 片段 |
 | `assets/icons/` | 应用窗口与安装包图标 |
 | `assets/screenshots/` | README 产品截图：分析面板、录音流程和上传目标弹窗 |
-| `Visualization algorithm/` | 可视化面板算法和渲染逻辑的开源整理版 |
+| `Visualization algorithm/` | 可视化面板算法和渲染逻辑的说明索引 |
 | `public/` | Web 与打包流程共用的静态资源 |
-| `lite.html` | 保留下来的单文件 Lite HTML 源文件 |
-| `legacy.html` | 指向 Lite HTML 的兼容别名 |
+| `UV/src/loudness_vis_uv/assets/lite.html` | 本地预览和 release 打包使用的 Lite HTML 保留资产 |
+| `UV/src/loudness_vis_uv/assets/legacy.html` | 指向 Lite HTML 保留资产的兼容别名 |
 | `UV/` | 基于 Python / uv 的本地预览启动包 |
 | `electron/` | Electron 桌面入口 |
 | `scripts/` | 构建、同步和打包脚本 |
@@ -211,8 +211,8 @@ npm run dev:electron
 
 ## Release 说明
 
-- Lite 单文件版本在 Release 中统一标注为 `lite.html`。
-- `legacy.html` 是早期保留名称，目前作为兼容别名存在。
+- Lite 单文件版本从 `UV/src/loudness_vis_uv/assets/lite.html` 打包，并在 Release 中统一标注为 `lite.html`。
+- `legacy.html` 是早期保留名称，目前作为 UV / Lite 打包流程中的兼容别名存在。
 - Lite 与 UV 分发包通过 GitHub Releases 提供，不放入主分支生成目录。
 - `node_modules/`、`dist/`、`lite/`、`UV/dist/`、压缩包和本地日志不会纳入版本控制。
 

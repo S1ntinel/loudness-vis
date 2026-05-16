@@ -5,11 +5,11 @@ import { fileURLToPath } from 'node:url';
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const rootDir = resolve(__dirname, '..');
 const liteDir = join(rootDir, 'lite');
-const liteHtmlPath = join(rootDir, 'lite.html');
+const liteHtmlPath = join(rootDir, 'UV', 'src', 'loudness_vis_uv', 'assets', 'lite.html');
 const fontsDir = join(rootDir, 'public', 'fonts');
 
 if (!existsSync(liteHtmlPath)) {
-  console.error('[lite:build] lite.html not found.');
+  console.error('[lite:build] UV Lite HTML asset not found.');
   process.exit(1);
 }
 
@@ -22,7 +22,9 @@ rmSync(liteDir, { force: true, recursive: true });
 mkdirSync(liteDir, { recursive: true });
 
 const liteSourceHtml = readFileSync(liteHtmlPath, 'utf8');
-const liteHtml = liteSourceHtml.replaceAll('public/fonts/', './fonts/');
+const liteHtml = liteSourceHtml
+  .replaceAll('./dist/fonts/', './fonts/')
+  .replaceAll('public/fonts/', './fonts/');
 
 writeFileSync(join(liteDir, 'index.html'), liteHtml, 'utf8');
 writeFileSync(join(liteDir, 'lite.html'), liteHtml, 'utf8');
@@ -39,7 +41,7 @@ function renderReadme() {
 
 ## 中文说明
 
-这是 LoudnessVis 的 Lite 分发目录，使用保留下来的 \`lite.html\` 单文件页面作为轻量版 release 资产。
+这是 LoudnessVis 的 Lite 分发目录，使用 UV 包内保留的 \`lite.html\` 单文件页面作为轻量版 release 资产。
 
 适用场景：
 
@@ -71,7 +73,7 @@ function renderReadme() {
 
 ## English
 
-This folder contains the Lite distribution of LoudnessVis, based on the preserved \`lite.html\` standalone page.
+This folder contains the Lite distribution of LoudnessVis, based on the preserved UV \`lite.html\` standalone page.
 
 Use this bundle when you need:
 

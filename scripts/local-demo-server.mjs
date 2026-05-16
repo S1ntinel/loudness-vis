@@ -9,6 +9,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const rootDir = resolve(__dirname, '..');
 const distDir = join(rootDir, 'dist');
 const publicDir = join(rootDir, 'public');
+const liteHtmlPath = join(rootDir, 'UV', 'src', 'loudness_vis_uv', 'assets', 'lite.html');
 const fallbackPortSpan = 20;
 
 const argMap = parseArgs(process.argv.slice(2));
@@ -46,7 +47,7 @@ const server = createServer(async (req, res) => {
     }
 
     if (pathname === '/lite.html' || pathname === '/legacy.html') {
-      return streamFile(res, join(rootDir, 'lite.html'));
+      return streamFile(res, liteHtmlPath);
     }
 
     if (pathname.startsWith('/dist/')) {
@@ -397,7 +398,7 @@ function renderHubPage(activePort) {
   <body>
     <main>
       <h1>LoudnessVis Local Hub</h1>
-      <p>本地稳定入口。React 构建版和 Lite HTML 都通过 HTTP 提供，避免 file:// 模式的白屏和模块加载限制。</p>
+      <p>本地稳定入口。React 构建版和 UV 内置 Lite HTML 都通过 HTTP 提供，避免 file:// 模式的白屏和模块加载限制。</p>
       <div class="grid">
         <section class="card">
           <h2>React Build</h2>
@@ -408,7 +409,7 @@ function renderHubPage(activePort) {
         </section>
         <section class="card">
           <h2>Lite HTML</h2>
-          <p>保留的单文件 Lite 本体；旧的 /legacy.html 路由继续作为兼容别名。</p>
+          <p>UV 包内保留的单文件 Lite 本体；旧的 /legacy.html 路由继续作为兼容别名。</p>
           <div class="actions">
             <a href="/lite.html">打开</a>
           </div>

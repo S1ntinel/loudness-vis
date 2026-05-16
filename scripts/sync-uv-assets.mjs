@@ -1,4 +1,4 @@
-import { cpSync, existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { cpSync, existsSync, mkdirSync, rmSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -7,7 +7,6 @@ const rootDir = resolve(__dirname, '..');
 const uvDir = join(rootDir, 'UV');
 const distDir = join(rootDir, 'dist');
 const assetsDir = join(uvDir, 'src', 'loudness_vis_uv', 'assets');
-const liteHtmlPath = join(rootDir, 'lite.html');
 
 if (!existsSync(distDir)) {
   console.error('[uv:sync] dist directory not found. Run `npm run build` first.');
@@ -18,8 +17,10 @@ mkdirSync(assetsDir, { recursive: true });
 cleanDirectory(assetsDir);
 
 cpSync(distDir, join(assetsDir, 'dist'), { recursive: true });
-writeFileSync(join(assetsDir, 'lite.html'), renderUvLiteHtml(), 'utf8');
-writeFileSync(join(assetsDir, 'legacy.html'), renderUvLiteHtml(), 'utf8');
+if (!existsSync(join(assetsDir, 'lite.html')) || !existsSync(join(assetsDir, 'legacy.html'))) {
+  console.error('[uv:sync] UV Lite HTML assets not found.');
+  process.exit(1);
+}
 writeFileSync(join(assetsDir, 'index.html'), renderHubPage(), 'utf8');
 
 console.log(`[uv:sync] assets updated in ${assetsDir}`);
@@ -27,14 +28,7 @@ console.log(`[uv:sync] assets updated in ${assetsDir}`);
 function cleanDirectory(directory) {
   rmSync(join(directory, 'dist'), { force: true, recursive: true });
   rmSync(join(directory, 'public'), { force: true, recursive: true });
-  rmSync(join(directory, 'lite.html'), { force: true });
-  rmSync(join(directory, 'legacy.html'), { force: true });
   rmSync(join(directory, 'index.html'), { force: true });
-}
-
-function renderUvLiteHtml() {
-  const liteHtml = readFileSync(liteHtmlPath, 'utf8');
-  return liteHtml.replaceAll('public/fonts/', './dist/fonts/');
 }
 
 function renderHubPage() {
@@ -133,7 +127,7 @@ function renderHubPage() {
         </section>
         <section class="card">
           <h2>Lite HTML</h2>
-          <p>保留的单文件 Lite 本体；旧的 legacy 名称继续作为兼容别名。</p>
+          <p>UV 包内保留的单文件 Lite 本体；旧的 legacy 名称继续作为兼容别名。</p>
           <div class="actions">
             <a href="/lite.html">打开</a>
           </div>
